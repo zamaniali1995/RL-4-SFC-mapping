@@ -26,7 +26,8 @@ v1 = node('node_1', 20, 3)
 v2 = node('node_2', 20, 4)
 input_cons = InputConstants.Inputs()
 graph = Graph(input_cons.network_path + input_cons.network_name)
-print(graph.start_file_line)
+#print(graph.start_file_line)
+
 #print (IndentationError.read_path)
 #Mf_cal()
         

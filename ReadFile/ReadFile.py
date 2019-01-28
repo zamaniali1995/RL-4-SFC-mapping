@@ -5,34 +5,89 @@ Created on Sun Jan 27 19:24:24 2019
 
 @author: ali
 """
-import pandas as pd
+#import pandas as pd
+#import numpy as np
 import sys
 sys.path.insert(0, '../ReadFile')
 import InputConstants
+
+## Node features class
+class node:
+    def __init__(self, name, cap, deg, bandwidth, dis):
+        self.name = name
+        self.cap = cap
+        self.deg = deg
+        self.bandwidht = bandwidth
+        self.dis = dis
+# link features class
+class link:
+    def __init__(self, name, cap, bandwidth, length):
+        self.cap = cap
+        self.bandwidth = bandwidth
+        self.length = length
+        self.name = name
+
 class Graph:
     def __init__(self, path):
         
-        self.start_file_line = None
-        self.end_file_line = None
-        self.start_node_line = None
-        self.start_link_line = None
+        start_file_line = None
+        end_file_line = None
+        start_node_line = None
+        end_node_line = None
+        start_link_line = None
+        end_link_line = None
+        node_list = []
+        link_list = []
+        
+        self.node_list = []
+        self.link_list = []
         
         input_cons = InputConstants.Inputs()
-#        data = pd.read_table(path, header = None)
         with open(path, 'r') as data:
             for cnt, line in enumerate(data):
-#                print (line)
                 line = line.split(',')
-#                print (line)
                 if line[0] == input_cons.START_OF_FILE_DELIMETER:
-                    self.start_file_line = cnt
-                if line[0] == input_cons.END_OF_FILE_DELIMETER:
-                    self.end_file_line = cnt
-                if line[0] == input_cons.START_OF_NODES_DELIMETER:
-                    self.start_node_line = cnt
-                if line[0] == input_cons.START_OF_LINK_DELIMETER:
-                    self.start_link_line = cnt
-                
+                    start_file_line = cnt
+                elif line[0] == input_cons.END_OF_FILE_DELIMETER:
+                    end_file_line = cnt
+                elif line[0] == input_cons.START_OF_NODES_DELIMETER:
+                    start_node_line = cnt
+                elif line[0] == input_cons.END_OF_NODES_DELIMETER:
+                    end_node_line = cnt
+                elif line[0] == input_cons.START_OF_LINK_DELIMETER:
+                    start_link_line = cnt
+                elif line[0] == input_cons.END_OF_LINK_DELIMETER:
+                    end_link_line = cnt
+        if start_file_line == None:
+            print('ReadFile Error: missing "START OF FILE DELIMETER"' )
+        elif end_file_line == None:
+            print('ReadFile Error: missing "END OF FILE DELIMETER"' )
+        elif start_node_line == None:
+            print('ReadFile Error: missing "START OF NODE DELIMETER"' )
+        elif end_node_line == None:
+            print('ReadFile Error: missing "END OF NODE DELIMETER"' )
+        elif start_link_line == None:
+            print('ReadFile Error: missing "START OF LINK DELIMETER"' )
+        elif end_link_line == None:
+            print('ReadFile Error: missing "END OF LINK DELIMETER"' ) 
+        with open(path, 'r') as data:
+            for cnt, line in enumerate(data):
+                if start_node_line < cnt < end_node_line:
+                    node_list.append(line[:])
+                if start_link_line < cnt < end_link_line:
+                    link_list.append(line[:])
+        for i in range(len(node_list)):
+            self.node_list.append(node(node_list[i], 2, 4, 4, 10))
+        
+        for i in range(len(link_list)):
+            self.link_list.append(link(link_list[i], 2, 2, 2))
+            
+        self.v1 = node('1', 2, 4, 4, 10)
+
+#    def makegragh(self, node):
+#        node('v1' ,2, 5, 10, 50)
+##        if self.end_file_line == None || self.start_file_line == None :
+#            print("Error in reading file. missing delimeters")
 #        while (all(data.iloc[self.start_file_num]) != input_cons.START_OF_FILE_DELIMETER):
 #            self.start_file_num +=1
 #            if self.start_file_num == len(data):
