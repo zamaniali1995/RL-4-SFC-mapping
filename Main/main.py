@@ -9,7 +9,7 @@ import sys
 sys.path.insert(0, '../ReadFile')
 sys.path.insert(0, '../Given')
 import InputConstants
-import ReadFile
+from ReadFile import Graph
 class node:
     def __init__(self, name, cap, degree):
         self.name = name
@@ -21,10 +21,12 @@ class node:
 #class ServiceChain:
 #    def __init__(self, )
 # Main
+a = 1
 v1 = node('node_1', 20, 3)
 v2 = node('node_2', 20, 4)
 input_cons = InputConstants.Inputs()
-graph = ReadFile.Graph(input_cons.network_path + input_cons.network_name)
+graph = Graph(input_cons.network_path + input_cons.network_name)
+print(graph.start_file_line)
 #print (IndentationError.read_path)
 #Mf_cal()
         
