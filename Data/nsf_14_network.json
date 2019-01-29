@@ -1,0 +1,126 @@
+{
+	"networkTopology":
+		{
+			"nodes": [
+                                  ["1", 100], 
+                                  ["2", 100],
+                                  ["3", 100],
+                                  ["4", 100],
+                                  ["5", 100],
+                                  ["6", 100],
+                                  ["7", 100], 
+                                  ["8", 100],
+                                  ["9", 100],
+                                  ["10", 100],
+                                  ["11", 100],
+                                  ["12", 100],
+                                  ["13", 100],
+                                  ["14", 100]
+                                 ] ,
+			"links": {
+		                   "1":[["2", 2100], ["3", 3000], ["8", 4800]],
+			           "2":[["1", 2100], ["3", 1200], ["4", 1500]],
+				   "3":[["1", 3000],["2", 1200], ["6", 3600]],
+				   "4":[["2", 1500],["5", 1200],["11", 3900]],
+				   "5":[["4", 1200],["7", 1200],["6", 2400]],
+				   "6":[["3", 1200], ["5", 1500], ["10", 2100], ["14", 3600]],
+				   "7":[["5", 1200], ["8", 1500], ["10", 2700]],
+				   "8":[["1", 4800], ["7", 1500], ["9", 1500]],
+				   "9":[["8", 1500], ["10", 1500], ["12", 600], ["13", 600]],
+				   "10":[["6", 2100], ["7", 2700], ["9", 1500]],
+				   "11":[["4", 3900], ["12", 1200], ["13", 1500]],
+				   "12":[["9", 600], ["11", 1200], ["14", 600]],
+				   "13":[["11", 1500], ["9", 600],["14", 300]],
+				   "14":[["6", 3600], ["12", 600], ["13", 300]]
+                                 }
+	   },
+
+    "chains": [
+		{
+			"name":"WebService",
+			"functions":["NAT","FW","TM","WOC","IDPS"],
+			"users": [
+				{"WA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"CA1":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"CA2":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"UT":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"CO":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"NE":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"IL":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"TX":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"GA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"DC":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"PA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"MI":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"NJ":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
+						],
+			"traffic%":18.2
+		},
+		{
+			 "name":"VoIP",
+			"functions":["NAT","FW","TM","FW","NAT"],
+			"users": [
+				{"WA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"CA1":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"CA2":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"UT":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"CO":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"NE":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"IL":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"TX":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"GA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"DC":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"PA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"MI":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"NJ":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
+						],
+			"traffic%":11.8
+		},
+		{
+		    "name":"VideoStreaming",
+			"functions":["NAT","FW","TM","VOC","IDPS"],
+			"users": [
+				{"WA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"CA1":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"CA2":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"UT":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"CO":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"NE":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"IL":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"TX":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"GA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"DC":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"PA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"MI":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"NJ":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
+						],
+			"traffic%":69.8
+		},
+		{
+		    "name":"OnlineGaming",
+			"functions":["NAT","FW","VOC","WOC","IDPS "],
+			"users": [
+				{"WA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"CA1":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"CA2":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"UT":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"CO":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"NE":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"IL":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"TX":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"GA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"DC":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"PA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"MI":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"NJ":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
+				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
+						],
+			"traffic%":0.2
+		}
+    ],
+	"functions":["NAT","FW","VOC","WOC","IDPS","TM"]
+	
+}

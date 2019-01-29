@@ -1,20 +1,20 @@
 links and their lengths in km,
 ***START OF FILE***,
 ***START OF NODE***,
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
+1,100,
+2,100,
+3,100,
+4,100,
+5,100,
+6,100,
+7,100,
+8,100,
+9,100,
+10,100,
+11,100,
+12,100,
+13,100,
+14,100,
 ***END OF NODE***,
 ***START OF LINK***,
 1,2,2100,
@@ -58,4 +58,4 @@ links and their lengths in km,
 14,10,1000,
 14,13,300,
 ***END OF LINK***,
-***END OF FILE***,
+***END OF FILE***
