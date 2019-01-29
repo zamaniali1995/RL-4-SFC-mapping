@@ -17,3 +17,5 @@ class Inputs:
 #    END_OF_LINK_DELIMETER = "***END OF LINK***"
     network_topology_node_name = 0
     network_topology_node_cap = 1
+    network_topology_link_dis = 1
+    network_topology_link_cap = 2

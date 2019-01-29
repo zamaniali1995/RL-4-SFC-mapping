@@ -18,7 +18,7 @@ class node:
         self.name = name
         self.cap = cap
         self.deg = deg
-        self.bandwidht = bandwidth
+        self.ban = bandwidth
         self.dis = dis
 # link features class
 class link:
@@ -39,6 +39,8 @@ class Graph:
         end_link_line = None
         node_cap_list = []
         link_list = []
+        node_len = []
+        node_ban = []
         
 #        self.node_list = []
         self.link_list = []
@@ -48,16 +50,34 @@ class Graph:
 #        print(data)
         with open(path, "r") as data_file:
             data = json.load(data_file)
-            tmp = data['networkTopology']['nodes']
+#            node_num = data['networkTopology']['nodes']
             node_name_list = [data['networkTopology']['nodes']
-                [i][input_cons.network_topology_node_name] 
-                    for i in range(len(tmp))]
+                [node_num][input_cons.network_topology_node_name] 
+                    for node_num in range(len(data['networkTopology']['nodes']))]
 #            node_cap_list = [data['networkTopology']['nodes'][i][input_cons.network_topology_node_cap] for i in range(len(tmp))]
-#            link_list = [data['networkTopology']['links'][i] for i in self.node_name_list]
-            self.node_list = [node(node_name_list[cnt], data['networkTopology']
-                ['nodes'][cnt][input_cons.network_topology_node_cap],
-                    len(data['networkTopology']['links'][name]), 10, 10) 
-                        for cnt, name in enumerate(node_name_list)]
+            link_list = [data['networkTopology']['links'][node_name] 
+                for node_name in node_name_list]
+# Calculation of average distance of each node from other nodes
+            for cnt_node in range(len(node_name_list)):
+                len_sum = 0
+                for cnt_link in range(len(link_list[cnt_node])):
+                    len_sum += link_list[cnt_node][cnt_link][input_cons.network_topology_link_dis]
+                node_len.append(len_sum / len(link_list[cnt_node]))
+# Calculation of sum of incoming link bandwidth to each node
+            for cnt_node in range(len(node_name_list)):
+                ban_sum = 0
+                for cnt_link in range(len(link_list[cnt_node])):
+                    ban_sum += link_list[cnt_node][cnt_link][input_cons.network_topology_link_cap]
+                node_ban.append(ban_sum)
+            
+            self.node_list = [node(node_name_list[cnt],
+                              data['networkTopology']['nodes'][cnt][input_cons.network_topology_node_cap],
+                              len(link_list[cnt]),
+                              node_ban[cnt],
+                              node_len[cnt]) 
+                              for cnt in range(len(node_name_list))]
+                
+#            self.link_len_list = [data['networkTopology']['links'][node_name][]]
 #            print(len(tmp))
 #        with open(path, 'r') as data:
 #            for cnt, line in enumerate(data):
