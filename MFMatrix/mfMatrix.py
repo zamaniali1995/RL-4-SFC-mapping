@@ -22,16 +22,23 @@ class Mf:
     def select_one(self, y, approach):
         if approach == 'roulette_wheel':
             y_one_hot = np.zeros_like(y)
-            _max = np.sum(y)
-#            print (_max)
-            pick = random.uniform(0 , _max)
-            curr = 0
-            for cnt in range(len(y)):
-                curr += y[cnt]
-                print(curr)
-                if pick > curr:
-                    y_one_hot[cnt] = 1
-                    return (y_one_hot)
+            tmp = []
+            for i in range(14):
+                tmp.append(y[0][i])
+            y_one_hot[0][np.random.choice(y.shape[1], p=tmp)]=1
+            return(y_one_hot)
+#            y_one_hot = [0] * len(y)
+#            _max = np.sum(y)
+##            print (_max)
+#            pick = random.uniform(0 , _max)
+#            curr = 0
+#            return(np.random.choice(14, y))
+#            for cnt in range(y.shape[1]):
+#                curr += y[0][cnt]
+##                print(curr)
+#                if pick > curr:
+#                    y_one_hot[0][cnt] = 1
+#                    return (y_one_hot)
 #            print (_max)
 #       print(graph.node_list[0].name)
-        
+                

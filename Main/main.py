@@ -13,7 +13,7 @@ import InputConstants
 from ReadFile import Graph
 import tensorflow as tf
 from mfMatrix import Mf
-
+import numpy as np
 input_cons = InputConstants.Inputs()
 graph = Graph(input_cons.network_path + input_cons.network_name)
 mf = Mf(graph)
@@ -23,16 +23,20 @@ node_num = len(graph.node_list)
 # Def.ine placeholder x for input
 x = tf.placeholder(dtype=tf.float64, shape=[node_num, input_cons.node_features], name="x")
 # Define placeholder y for output
-y = tf.placeholder(dtype=tf.float64, shape=[node_num, 1], name="y")
+y = tf.placeholder(dtype=tf.float64, shape=[1, node_num], name="y")
 # Define variable w and fill it with random number
 w = tf.Variable(tf.random_normal(shape=[input_cons.node_features, 1], stddev=0.1, dtype=tf.float64), name="weights", dtype=tf.float64)
 # Define variable b and fill it with zero 
 b = tf.Variable(tf.zeros(1, dtype=tf.float64), name="bias", dtype=tf.float64)
 # Define logistic Regression
 logit = tf.matmul(x, w) + b
-y_predicted = 1.0 / (1.0 + tf.exp(-logit))
+logit_mod = tf.reshape(logit, [1, -1])
+#_sum = tf.reduce_sum(logit)
+#y_predicted = tf.exp(logit[0])/(1+_sum)
+y_predicted = tf.nn.softmax(logit_mod)
+#y_predicted1 = 1.0 / (1.0 + tf.exp(-logit))
 # Define maximum likelihood loss function
-cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logit, labels=y)
+cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logit_mod, labels=y)
 cost = tf.reduce_mean(cross_entropy)
 # Define optimizer: GradientDescent         
 optimizer = tf.train.GradientDescentOptimizer(learning_rate= 
@@ -49,13 +53,17 @@ with tf.Session() as sess:
     for epoch in range(input_cons.epoch_num):
 #    for epoch in range(1):
         train_loss = 0
+        w_RL = sess.run(w)
+        logit_RL = sess.run(logit, feed_dict={x: mf.mf_matrix})
         y_RL = sess.run(y_predicted, feed_dict={x: mf.mf_matrix})
+#        y_RL1 = sess.run(y_predicted1, feed_dict={x: mf.mf_matrix})
+#       
         y_one_hot = mf.select_one(y_RL, approach='roulette_wheel')
-        y_one_hot = y_one_hot.reshape(14, 1)
+#        y_one_hot = y_one_hot.reshape(1, -1)
         InputList = {x: mf.mf_matrix,
                      y: y_one_hot}
         _, loss = sess.run([optimizer, cost], feed_dict=InputList)
-
+        print(loss)
 #    for epoch in range(input_cons.epoch_num):
         
 #    print(y_RL)
