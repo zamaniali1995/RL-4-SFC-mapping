@@ -10,13 +10,20 @@ sys.path.insert(0, '../ReadFile')
 sys.path.insert(0, '../MFMatrix')
 sys.path.insert(0, '../Given')
 import InputConstants
-from ReadFile import Graph
+from ReadFile import Graph, Chains
 import tensorflow as tf
 from mfMatrix import Mf
-import numpy as np
+#import numpy as np
 input_cons = InputConstants.Inputs()
 graph = Graph(input_cons.network_path + input_cons.network_name)
+_chain = Chains(input_cons.chains_path + input_cons.chains_name)
+chains = _chain.read()
+graph.function_placement(node=2, fun='ali1')
+graph.function_placement(node=2, fun='ali')
+#%%
 mf = Mf(graph)
+
+
 # Learning
 
 node_num = len(graph.node_list)

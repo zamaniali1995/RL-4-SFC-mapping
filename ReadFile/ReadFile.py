@@ -11,49 +11,43 @@ import sys
 sys.path.insert(0, '../ReadFile')
 import InputConstants
 import json
-## Node features class
-class node:
-    def __init__(self, name, cap, deg, bandwidth, dis):
+# Node features class
+class Node:
+    def __init__(self, name, cap, deg, bandwidth, dis, function):
         self.name = name
         self.cap = cap
         self.deg = deg
         self.ban = bandwidth
         self.dis = dis
-# link features class
-class link:
+        self.fun = []
+#        self.fun.append(function)
+# Link features class
+class Link:
     def __init__(self, name, cap, bandwidth, length):
         self.cap = cap
         self.bandwidth = bandwidth
         self.length = length
         self.name = name
-
+# Chain features class
+class Chain:
+    def __init__(self, name, function, user, traffic):
+        self.name = name
+        self.fun = function
+        self.user = user
+        self.traf = traffic
+# Grahp class contains of nodes and links features
 class Graph:
     def __init__(self, path):
-        
-#        start_file_line = None
-#        end_file_line = None
-#        start_node_line = None
-#        end_node_line = None
-#        start_link_line = None
-#        end_link_line = None
-#        node_cap_list = []
+        input_cons = InputConstants.Inputs()
         link_list = []
         node_len = []
         node_ban = []
-        
-#        self.node_list = []
-        self.link_list = []
-        
-        input_cons = InputConstants.Inputs()
-#        data = pd.read_csv(path, header=None)
-#        print(data)
         with open(path, "r") as data_file:
             data = json.load(data_file)
-#            node_num = data['networkTopology']['nodes']
             node_name_list = [data['networkTopology']['nodes']
                 [node_num][input_cons.network_topology_node_name] 
                     for node_num in range(len(data['networkTopology']['nodes']))]
-#            node_cap_list = [data['networkTopology']['nodes'][i][input_cons.network_topology_node_cap] for i in range(len(tmp))]
+
             link_list = [data['networkTopology']['links'][node_name] 
                 for node_name in node_name_list]
 # Calculation of average distance of each node from other nodes
@@ -69,13 +63,29 @@ class Graph:
                     ban_sum += link_list[cnt_node][cnt_link][input_cons.network_topology_link_cap]
                 node_ban.append(ban_sum)
             
-            self.node_list = [node(node_name_list[cnt],
+            self.node_list = [Node(node_name_list[cnt],
                               data['networkTopology']['nodes'][cnt][input_cons.network_topology_node_cap],
                               len(link_list[cnt]),
                               node_ban[cnt],
-                              node_len[cnt]) 
+                              node_len[cnt], None) 
                               for cnt in range(len(node_name_list))]
-                
+    def function_placement(self, node, fun):
+        self.node_list[node].fun.append(fun)
+            
+class Chains:
+    def __init__(self, path):
+        self.path = path
+    def read(self):
+        with open(self.path, "r") as data_file:
+            data = json.load(data_file)
+#            for i in range(len(data['chains'])):
+            return([Chain(data['chains'][i]['name'],
+                                 data['chains'][i]['functions'], 
+                                 data['chains'][i]['users'], 
+                                 data['chains'][i]['traffic%']) 
+                                 for i in range(len(data['chains']))])
+#            func_list = data['chains'][0]['function']
+#            print(len(data['chains']))
 #            self.link_len_list = [data['networkTopology']['links'][node_name][]]
 #            print(len(tmp))
 #        with open(path, 'r') as data:
