@@ -21,9 +21,9 @@ class Inputs:
     network_topology_link_dis = 1
     network_topology_link_cap = 2
 # Learning parameters
-    epochNum = 5000
-    batchSize = 500
-    trainNum=3500
-    validNum=100
+    epoch_num = 5000
+    batch_Size = 500
+    train_num=3500
+    valid_num=100
     node_features = 4
-    learningRate = 1e-6
+    learning_rate = 1e-6

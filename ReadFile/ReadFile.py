@@ -10,7 +10,6 @@ Created on Sun Jan 27 19:24:24 2019
 import sys
 sys.path.insert(0, '../ReadFile')
 import InputConstants
-import csv
 import json
 ## Node features class
 class node:
@@ -31,13 +30,13 @@ class link:
 class Graph:
     def __init__(self, path):
         
-        start_file_line = None
-        end_file_line = None
-        start_node_line = None
-        end_node_line = None
-        start_link_line = None
-        end_link_line = None
-        node_cap_list = []
+#        start_file_line = None
+#        end_file_line = None
+#        start_node_line = None
+#        end_node_line = None
+#        start_link_line = None
+#        end_link_line = None
+#        node_cap_list = []
         link_list = []
         node_len = []
         node_ban = []
