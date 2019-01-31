@@ -19,7 +19,7 @@ class Node:
         self.deg = deg
         self.ban = bandwidth
         self.dis = dis
-        self.fun = []
+        self.fun = {}
 #        self.fun.append(function)
 # Link features class
 class Link:
@@ -67,14 +67,28 @@ class Graph:
                               data['networkTopology']['nodes'][cnt][input_cons.network_topology_node_cap],
                               len(link_list[cnt]),
                               node_ban[cnt],
-                              node_len[cnt], None) 
+                              0,
+                              None) 
                               for cnt in range(len(node_name_list))]
-    def function_placement(self, node, fun):
-        self.node_list[node].fun.append(fun)
+    def function_placement(self, node, ser, fun):
+        self.node_list[node].fun[ser].append(fun)
+    def batch_function_placement(self, ser, node_fun):
+        pass
+    def check(self, node_fun):
+        return True
+
             
 class Chains:
-    def __init__(self, path):
+    def __init__(self, path, graph):
         self.path = path
+        with open(self.path, "r") as data_file:
+            data = json.load(data_file)
+#            service_list = [data['chains'][c]['name'] 
+#            for c in range(len(data['chains']))]
+#            print(service_list)
+            for i in range(len(data['chains'])):
+                for j in range(len(data['chains'])):
+                    graph.node_list[i].fun[data['chains'][j]['name']] = []
     def read(self):
         with open(self.path, "r") as data_file:
             data = json.load(data_file)

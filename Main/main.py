@@ -16,13 +16,16 @@ from mfMatrix import Mf
 #import numpy as np
 input_cons = InputConstants.Inputs()
 graph = Graph(input_cons.network_path + input_cons.network_name)
-_chain = Chains(input_cons.chains_path + input_cons.chains_name)
+_chain = Chains(input_cons.chains_path + input_cons.chains_name, graph)
 chains = _chain.read()
-graph.function_placement(node=2, fun='ali1')
-graph.function_placement(node=2, fun='ali')
+graph.function_placement(node=2, ser='WebService', fun='ali1')
+#graph.function_placement(node=2, fun='ali')
 #%%
 mf = Mf(graph)
-
+#mf.function_placement(node=2, ser='WebService', fun='ali')
+#
+#mf.function_placement(node=2, ser='WebService', fun='ali1')
+#%%
 
 # Learning
 
@@ -55,22 +58,38 @@ trainAccList = []
 testAccList = []
 trainErrList = []
 testErrList = []
+for s in range(len(chains)):
+    for f in range(len(chains[s].fun)):
+        fun = chains[s].fun[f]
+        
 with tf.Session() as sess:
     init.run()
-    for epoch in range(input_cons.epoch_num):
-#    for epoch in range(1):
-        train_loss = 0
-        w_RL = sess.run(w)
-        logit_RL = sess.run(logit, feed_dict={x: mf.mf_matrix})
-        y_RL = sess.run(y_predicted, feed_dict={x: mf.mf_matrix})
+    for s in range(len(chains)):
+        node_fun = []
+        for fun in chains[s].fun:
+#            fun = chains[s].fun[f]        
+            mf_matrix = mf.get_feature_matrix()
+            for epoch in range(input_cons.epoch_num):
+            #    for epoch in range(1):
+#                train_loss = 0
+#                w_RL = sess.run(w)
+#                logit_RL = sess.run(logit, feed_dict={x: mf.mf_matrix})
+                y_RL = sess.run(y_predicted, feed_dict={x: mf.mf_matrix})
+                y_one_hot, candidate = mf.select_one(y_RL,
+                                                     approach='roulette_wheel')
+#                InputList = {x: mf.mf_matrix,
+#                     y: y_one_hot}
+#                _, loss = sess.run([optimizer, cost], feed_dict=InputList)
+#                print(loss)
+            node_fun.append((candidate, fun))
+        if graph.check(node_fun):
+            graph.batch_function_placement(ser=s,
+                                           node_fun=node_fun)
+                
 #        y_RL1 = sess.run(y_predicted1, feed_dict={x: mf.mf_matrix})
 #       
-        y_one_hot = mf.select_one(y_RL, approach='roulette_wheel')
 #        y_one_hot = y_one_hot.reshape(1, -1)
-        InputList = {x: mf.mf_matrix,
-                     y: y_one_hot}
-        _, loss = sess.run([optimizer, cost], feed_dict=InputList)
-        print(loss)
+        
 #    for epoch in range(input_cons.epoch_num):
         
 #    print(y_RL)
