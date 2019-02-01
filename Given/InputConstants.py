@@ -20,8 +20,11 @@ class Inputs:
 # network topology parameters
     network_topology_node_name = 0
     network_topology_node_cap = 1
+    network_topology_link_name = 0
     network_topology_link_dis = 1
     network_topology_link_cap = 2
+    function_name = 0
+    function_usage = 1
 # Learning parameters
     epoch_num = 5000
     batch_Size = 500

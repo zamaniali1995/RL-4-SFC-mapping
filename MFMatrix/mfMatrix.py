@@ -14,26 +14,11 @@ class Mf:
     def __init__(self, graph):
         self.graph = graph
         input_cons = InputConstants.Inputs()
-        self.mf_matrix = np.zeros([len(graph.node_list), input_cons.node_features])
-        for i in range(len(graph.node_list)):
-            self.mf_matrix[i, 0] = graph.node_list[i].cap
-            self.mf_matrix[i, 1] = graph.node_list[i].deg
-            self.mf_matrix[i, 2] = graph.node_list[i].ban
-            self.mf_matrix[i, 3] = graph.node_list[i].dis
-    def select_one(self, y, approach):
-        if approach == 'roulette_wheel':
-            y_one_hot = np.zeros_like(y)
-            tmp = []
-            for i in range(14):
-                tmp.append(y[0][i])
-            can = np.random.choice(y.shape[1], p=tmp)
-            y_one_hot[0][can]=1
-            return(y_one_hot, can)
-    def function_placement(self, node, ser, fun):
-        self.graph.node_list[node].fun[ser].append(fun)
         
-    def get_feature_matrix(self):
-        self.graph.node_list
+
+
+        
+
 #            y_one_hot = [0] * len(y)
 #            _max = np.sum(y)
 ##            print (_max)

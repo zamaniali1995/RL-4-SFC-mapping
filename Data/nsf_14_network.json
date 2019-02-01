@@ -35,6 +35,8 @@
                                  }
 	   },
 
+    "functions":{"NAT": 100, "FW": 1, "TM": 1, "WOC": 1, "IDPS": 1},
+
     "chains": [
 		{
 			"name":"WebService",
@@ -120,7 +122,7 @@
 						],
 			"traffic%":0.2
 		}
-    ],
-	"functions":["NAT","FW","VOC","WOC","IDPS","TM"]
+    ]
+	
 	
 }
