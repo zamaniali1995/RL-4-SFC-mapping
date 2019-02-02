@@ -41,9 +41,31 @@ x = tf.placeholder(dtype=tf.float64, shape=[node_num, input_cons.node_features],
 # Define placeholder y for output
 y = tf.placeholder(dtype=tf.float64, shape=[1, node_num], name="y")
 # Define variable w and fill it with random number
-w = tf.Variable(tf.random_normal(shape=[input_cons.node_features, 1], stddev=0.1, dtype=tf.float64), name="weights", dtype=tf.float64)
+w = tf.Variable(tf.random_normal(shape=[input_cons.node_features, 1], stddev=0.1, dtype=tf.float64), name="weights", dtype=tf.float64, trainable=True)
 # Define variable b and fill it with zero 
-b = tf.Variable(tf.zeros(1, dtype=tf.float64), name="bias", dtype=tf.float64)
+b = tf.Variable(tf.zeros(1, dtype=tf.float64), name="bias", dtype=tf.float64, trainable=True)
+# Fetch a list of our network's trainable parameters.
+trainable_vars = tf.trainable_variables()
+# Create variables to store accumulated gradients
+## initialize
+#tf.local_variables_initializer().run()
+#tf.global_variables_initializer().run()
+
+
+
+
+#accumulators = [
+#    tf.Variable(
+#        tf.zeros_like(tv.initialized_value()),
+#        trainable=False
+#    ) for tv in trainable_vars
+#]
+
+
+
+
+
+#print(accumulators)
 # Define logistic Regression
 logit = tf.matmul(x, w) + b
 logit_mod = tf.reshape(logit, [1, -1])
@@ -52,19 +74,39 @@ logit_mod = tf.reshape(logit, [1, -1])
 y_predicted = tf.nn.softmax(logit_mod)
 #y_predicted1 = 1.0 / (1.0 + tf.exp(-logit))
 # Define maximum likelihood loss function
-cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logit_mod, labels=y)
-cost = tf.reduce_mean(cross_entropy)
+loss = tf.nn.sigmoid_cross_entropy_with_logits(logits=logit_mod, labels=y)
+cost = tf.reduce_mean(loss)
 # Define optimizer: GradientDescent         
-optimizer = tf.train.GradientDescentOptimizer(learning_rate= 
-                                                input_cons.learning_rate)
+optimizer = tf.train.GradientDescentOptimizer(learning_rate= input_cons.learning_rate)
+
+# Compute gradients; grad_pairs contains (gradient, variable) pairs
+grad_pairs = optimizer.compute_gradients(loss, [w, b])
+# Create operations which add a variable's gradient to its accumulator.
+#%%
+#accumulate_ops = [
+#    accumulator.assign_add(
+#        grad
+#    ) for (accumulator, (grad, var)) in zip(accumulators, grad_pairs)
+#]
+#%%
+#train_step = optimizer.apply_gradients(
+#    [(accumulator, var) 
+#        for (accumulator, (grad, var)) in zip(accumulators, grad_pairs)]
+#)
+# Accumulators must be zeroed once the accumulated gradient is applied.
+#zero_ops = [
+#    accumulator.assign(
+#        tf.zeros_like(tv)
+#    ) for (accumulator, tv) in zip(accumulators, trainable_vars)
+#]                                                
 opt = optimizer.minimize(cost)
 init = tf.initialize_all_variables()
 #%%
-grad = optimizer.compute_gradients(cross_entropy, w)
+#grad = optimizer.compute_gradients(cross_entropy, w)
 #gradients = [g for g, variable in grad]
-gradients, variable = zip(*grad)
+#gradients, variable = zip(*grad)
 
-optimize = optimizer.apply_gradients(zip(gradients, variable))
+#optimize = optimizer.apply_gradients(zip(gradients, variable))
 #gradients1 = gradients[0]
 #gradi_list = tf.zeros(input_cons.node_features)
 #gradi_sum = tf.zeros(input_cons.node_features)
@@ -91,11 +133,51 @@ testErrList = []
 #for s in range(len(chains)):
 #    for f in range(len(chains[s].fun)):
 #        fun = chains[s].fun[f]
-#%%        
+#%%  
+
+accumulators = [
+    tf.Variable(
+        tf.zeros_like(tv.initialized_value()),
+        trainable=False
+    ) for tv in [w, b]
+    ]
+#%%
+      
+accumulate_ops = [
+    accumulator.assign_add(
+        grad
+    ) for (accumulator, (grad, var)) in zip(accumulators, grad_pairs)
+                    ]
+#%%    
+    
+train_step = optimizer.apply_gradients(
+    [(accumulator, var) 
+        for (accumulator, (grad, var)) in zip(accumulators, grad_pairs)]
+                        )
+
+zero_ops = [
+    accumulator.assign(
+        tf.zeros_like(tv)
+    ) for (accumulator, tv) in zip(accumulators, trainable_vars)
+                ]      
 with tf.Session() as sess:
-    init.run()
-    for epoch in range(input_cons.epoch_num):
-#    for epoch in range(1):
+#    init.run()
+# Fetch a list of our network's trainable parameters.
+    
+#    for tv in trainable_vars:
+#        print(tv)
+#    print(trainable_vars)
+    tf.local_variables_initializer().run()
+    tf.global_variables_initializer().run()
+
+
+
+                    
+    
+                                              
+
+#    for epoch in range(input_cons.epoch_num):
+    for epoch in range(1):
         #        gradi_list = np.zeros(input_cons.node_features)
 #        gradi_sum = np.zeros(input_cons.node_features)
 
@@ -123,12 +205,14 @@ with tf.Session() as sess:
                                                        
 #                print (gradi)
 #                InputList = {x: mf.mf_matrix}
-                gradients_val = sess.run(gradients, feed_dict={x: graph.mf_matrix, y: y_one_hot})
+                gradients_val = sess.run(accumulate_ops, feed_dict={x: graph.mf_matrix, y: y_one_hot})
+                print(sess.run(grad_pairs, feed_dict={x: graph.mf_matrix, y: y_one_hot}))
 #                gradients_val1 = sess.run(gradients1, feed_dict={x: graph.mf_matrix, y: y_one_hot})                                                    
-#                print(gradients_val, gradients_val1)
-                grad_stack = gradients_val[0] + grad_stack
+                print(gradients_val)
+                print('---------------------')
+#                grad_stack = gradients_val[0] + grad_stack
 
-                grad_stack = grad_stack[:, 0]
+#                grad_stack = grad_stack[:, 0]
 #                print(grad_stack)
                 node_fun.append((candidate, fun))   
 #                print(graph.mf_matrix)
@@ -136,22 +220,26 @@ with tf.Session() as sess:
 #            print(node_fun)
             if (graph.node_is_mapped(node_fun, chains) & 
                 graph.link_is_mapped()):
-                reward = 2
+                reward = 0.001
 #                reward = rev_to_cost(node_fun)
-                grads_stack += (input_cons.learning_rate * reward 
-                               * grad_stack) 
+#                grads_stack += (input_cons.learning_rate * reward 
+#                               * grad_stack) 
             else:
-                grads_stack = 0
+                sess.run(zero_ops, feed_dict={x: graph.mf_matrix, y: y_one_hot})
+#               
+#                grads_stack = 0
             cnt += 1
             if cnt == input_cons.batch_Size:
                 #apply gradients
-                gr = sess.run(optimize, feed_dict={x: graph.mf_matrix, y: y_one_hot})
+                gr = sess.run(train_step, feed_dict={x: graph.mf_matrix, y: y_one_hot})
+                print(sess.run(cost, feed_dict={x: graph.mf_matrix, y: y_one_hot}))
 #                cost_ = sess.run(cost, feed_dict={x: graph.mf_matrix, y: y_one_hot})                
 #                grad_stack = tf.convert_to_tensor(grads_stack)
 #                print(cost_)
 #                print(grads_stack)
                 cnt = 0
-                grads_stack = 0
+                sess.run(zero_ops, feed_dict={x: graph.mf_matrix, y: y_one_hot})
+#                grads_stack = 0
 #            print (grad_stack)
                 
                 
