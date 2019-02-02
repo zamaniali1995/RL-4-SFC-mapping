@@ -27,8 +27,8 @@ class Inputs:
     function_usage = 1
 # Learning parameters
     epoch_num = 5000
-    batch_Size = 500
+    batch_Size = 2
     train_num=3500
     valid_num=100
     node_features = 4
-    learning_rate = 1e-6
+    learning_rate = 1e-20

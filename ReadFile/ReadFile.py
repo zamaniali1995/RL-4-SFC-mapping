@@ -81,22 +81,23 @@ class Graph:
 #        fun = node_fun[1]
         for node, fun in node_fun:
             self.function_placement(node, ser, fun)
-    def node_check(self, node_fun, chains):
-        _sum = 0
-        flag = True
-        service_list = [chains[i].name for i in range(len(chains))]
-        for _node_fun in node_fun:
-            _sum += self.function_cpu_usage(_node_fun[1])
-            node = _node_fun[0]
-            for s in service_list:
-                _fun = self.node_list[node].fun[s]
-                for _fun_ in _fun:
-                   _sum += self.function_cpu_usage(_fun_)
-        print(_sum)
-        if _sum > self.node_list[node].cap:
-                flag = False
-        return flag
-    def link_check(node_fun):
+    def node_is_mapped(self, node_fun, chains):
+        return True
+        #        _sum = 0
+#        flag = True
+#        service_list = [chains[i].name for i in range(len(chains))]
+#        for _node_fun in node_fun:
+#            _sum += self.function_cpu_usage(_node_fun[1])
+#            node = _node_fun[0]
+#            for s in service_list:
+#                _fun = self.node_list[node].fun[s]
+#                for _fun_ in _fun:
+#                   _sum += self.function_cpu_usage(_fun_)
+#        print(_sum)
+#        if _sum > self.node_list[node].cap:
+#                flag = False
+#        return flag
+    def link_is_mapped(node_fun):
         return True
     def get_feature_matrix(self):
         self.mf_matrix = np.zeros([len(self.node_list),
@@ -121,9 +122,10 @@ class Graph:
                         _sum += self.dis_cal(n_1, n_2)
                         cnt +=1
 #                print(_sum, cnt)
-                tmp = _sum / cnt
-                self.node_list[n_1].dis = tmp
-                self.mf_matrix[n_1, 3] = tmp
+                if cnt != 0:
+                    tmp = _sum / cnt
+                    self.node_list[n_1].dis = tmp
+                    self.mf_matrix[n_1, 3] = tmp
         else:
             for n_1 in range(len(self.node_list)):
                 self.node_list[n_1].dis = 0
@@ -188,7 +190,7 @@ class Graph:
         if approach == 'sample':
             y_one_hot = np.zeros_like(y)
             tmp = []
-            for i in range(14):
+            for i in range(len(self.node_list)):
                 tmp.append(y[0][i])
             can = np.random.choice(y.shape[1], p=tmp)
             y_one_hot[0][can]=1
