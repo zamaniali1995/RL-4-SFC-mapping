@@ -31,4 +31,4 @@ class Inputs:
     train_num=3500
     valid_num=100
     node_features = 4
-    learning_rate = 1e-20
+    learning_rate = 1e-1

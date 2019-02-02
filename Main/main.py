@@ -145,21 +145,30 @@ accumulators = [
       
 accumulate_ops = [
     accumulator.assign_add(
-        grad
+        grad 
     ) for (accumulator, (grad, var)) in zip(accumulators, grad_pairs)
                     ]
+
+#mul_reward_acc = tf.multiply(accumulators, 0.1)
+accumulate_mul = [
+    accumulator.assign_add(
+        accumulator * 0.1 - accumulator  
+    ) for (accumulator, (grad, var)) in zip(accumulators, grad_pairs)
+                    ]
+#multiply = tf.math.scalar_mul(tf.constant(0.1, dtype=tf.float32), accumulators)
 #%%    
     
 train_step = optimizer.apply_gradients(
     [(accumulator, var) 
-        for (accumulator, (grad, var)) in zip(accumulators, grad_pairs)]
+        for (accumulator, (grad, var)) in zip(accumulate_mul, grad_pairs)]
                         )
 
 zero_ops = [
     accumulator.assign(
         tf.zeros_like(tv)
-    ) for (accumulator, tv) in zip(accumulators, trainable_vars)
-                ]      
+    ) for (accumulator, tv) in zip(accumulators, [w, b])
+                ]
+#%%      
 with tf.Session() as sess:
 #    init.run()
 # Fetch a list of our network's trainable parameters.
@@ -177,7 +186,7 @@ with tf.Session() as sess:
                                               
 
 #    for epoch in range(input_cons.epoch_num):
-    for epoch in range(1):
+    for epoch in range(20):
         #        gradi_list = np.zeros(input_cons.node_features)
 #        gradi_sum = np.zeros(input_cons.node_features)
 
@@ -194,8 +203,7 @@ with tf.Session() as sess:
                 graph.update_feature_matrix(node_fun)
             #    for epoch in range(1):
 #                train_loss = 0
-                w_RL = sess.run(w)
-                print(w_RL)
+
 #                logit_RL = sess.run(logit, feed_dict={x: mf.mf_matrix})
                 y_RL = sess.run(y_predicted, feed_dict={x: graph.mf_matrix})
                 y_one_hot, candidate = graph.select_one(y_RL,
@@ -206,10 +214,11 @@ with tf.Session() as sess:
 #                print (gradi)
 #                InputList = {x: mf.mf_matrix}
                 gradients_val = sess.run(accumulate_ops, feed_dict={x: graph.mf_matrix, y: y_one_hot})
-                print(sess.run(grad_pairs, feed_dict={x: graph.mf_matrix, y: y_one_hot}))
+#                print(sess.run(grad_pairs, feed_dict={x: graph.mf_matrix, y: y_one_hot}))
 #                gradients_val1 = sess.run(gradients1, feed_dict={x: graph.mf_matrix, y: y_one_hot})                                                    
-                print(gradients_val)
-                print('---------------------')
+#                print('*****')
+#                print(gradients_val)
+#                print('---------------------')
 #                grad_stack = gradients_val[0] + grad_stack
 
 #                grad_stack = grad_stack[:, 0]
@@ -218,9 +227,13 @@ with tf.Session() as sess:
 #                print(graph.mf_matrix)
 #                print(gradients_val)
 #            print(node_fun)
+            print(gradients_val)
             if (graph.node_is_mapped(node_fun, chains) & 
                 graph.link_is_mapped()):
                 reward = 0.001
+                # multipy gradients
+                print
+                print(sess.run(accumulate_mul))
 #                reward = rev_to_cost(node_fun)
 #                grads_stack += (input_cons.learning_rate * reward 
 #                               * grad_stack) 
@@ -231,14 +244,21 @@ with tf.Session() as sess:
             cnt += 1
             if cnt == input_cons.batch_Size:
                 #apply gradients
-                gr = sess.run(train_step, feed_dict={x: graph.mf_matrix, y: y_one_hot})
-                print(sess.run(cost, feed_dict={x: graph.mf_matrix, y: y_one_hot}))
+                accu = sess.run(accumulators)
+                gr = sess.run(train_step)
+#                print(sess.run(cost, feed_dict={x: graph.mf_matrix, y: y_one_hot}))
+                w_RL = sess.run(w)
+                print(w_RL)
+                print('***************')
+                print(sess.run(accumulators))
+                print("--------------------------------------")
 #                cost_ = sess.run(cost, feed_dict={x: graph.mf_matrix, y: y_one_hot})                
 #                grad_stack = tf.convert_to_tensor(grads_stack)
 #                print(cost_)
 #                print(grads_stack)
                 cnt = 0
-                sess.run(zero_ops, feed_dict={x: graph.mf_matrix, y: y_one_hot})
+                sess.run(zero_ops)
+
 #                grads_stack = 0
 #            print (grad_stack)
                 

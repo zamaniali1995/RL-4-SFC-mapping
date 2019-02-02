@@ -42,6 +42,7 @@ class Graph:
         link_list = []
         node_len = []
         node_ban = []
+        self.reward = 0.1
         with open(path, "r") as data_file:
             self.data = json.load(data_file)
             node_name_list = [self.data['networkTopology']['nodes']
