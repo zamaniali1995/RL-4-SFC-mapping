@@ -10,11 +10,16 @@ sys.path.insert(0, '../ReadFile')
 sys.path.insert(0, '../MFMatrix')
 sys.path.insert(0, '../Given')
 import InputConstants
+from InputConstants import Inputs
 from ReadFile import Graph, Chains
 import tensorflow as tf
 from mfMatrix import Mf
 import numpy as np
 input_cons = InputConstants.Inputs()
+
+#graph = Graph('../Data/nsf_14_network.json')
+#_chain = Chains('../Data/nsf_14_network.json')
+
 graph = Graph(input_cons.network_path + input_cons.network_name)
 _chain = Chains(input_cons.chains_path + input_cons.chains_name, graph)
 chains = _chain.read()
@@ -152,7 +157,7 @@ accumulate_ops = [
 #mul_reward_acc = tf.multiply(accumulators, 0.1)
 accumulate_mul = [
     accumulator.assign_add(
-        accumulator * 0.1 - accumulator  
+        accumulator * graph.rev_to_cost_val - accumulator  
     ) for (accumulator, (grad, var)) in zip(accumulators, grad_pairs)
                     ]
 #multiply = tf.math.scalar_mul(tf.constant(0.1, dtype=tf.float32), accumulators)
@@ -229,12 +234,12 @@ with tf.Session() as sess:
 #            print(node_fun)
             print(gradients_val)
             if (graph.node_is_mapped(node_fun, chains) & 
-                graph.link_is_mapped()):
+                graph.link_is_mapped(node_fun)):
                 reward = 0.001
                 # multipy gradients
                 print
                 print(sess.run(accumulate_mul))
-#                reward = rev_to_cost(node_fun)
+                graph.rev_to_cost(node_fun, ser_num, chains)
 #                grads_stack += (input_cons.learning_rate * reward 
 #                               * grad_stack) 
             else:

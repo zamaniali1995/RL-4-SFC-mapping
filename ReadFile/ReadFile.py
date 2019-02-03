@@ -8,7 +8,7 @@ Created on Sun Jan 27 19:24:24 2019
 #import pandas as pd
 import numpy as np
 import sys
-sys.path.insert(0, '../ReadFile')
+sys.path.insert(0, '../Given')
 import InputConstants
 import json
 # Node features class
@@ -30,10 +30,11 @@ class _Link:
         self.name = name
 # Chain features class
 class _Chain:
-    def __init__(self, name, function, user, traffic):
+    def __init__(self, name, function, user, bandwidth, traffic):
         self.name = name
         self.fun = function
         self.user = user
+        self.ban = bandwidth
         self.traf = traffic
 # Grahp class contains of nodes and links features
 class Graph:
@@ -98,7 +99,25 @@ class Graph:
 #        if _sum > self.node_list[node].cap:
 #                flag = False
 #        return flag
-    def link_is_mapped(node_fun):
+    def rev_to_cost(self, node_fun, ser_num, chains):
+        td = 2
+        self.rev_to_cost_val = 0
+        R = self.revenue_measure(node_fun, ser_num, chains,td)
+        C = self.cost_measure(node_fun, ser_num, chains, td)
+        self.rev_to_cost_val = (R / C)
+    def revenue_measure(self, node_fun, ser_num, chains, td):
+        cpu_usage = sum([self.function_cpu_usage(node_fun[i][1])
+                    for i in range(len(node_fun))])
+        bandwidth_usage = chains[ser_num].ban * (len(node_fun) - 1)
+        return td * (cpu_usage + bandwidth_usage)
+    def cost_measure(self, node_fun, ser_num, chains, td):
+        _sum = 0
+        for n in range(len(node_fun)-1):
+            _sum += self.hop_count(node_fun[n][0], node_fun[n+1][0])
+        return chains[ser_num].ban * _sum * td
+    def hop_count(self, node_1, node_2):
+        return self.hop[node_1][node_2]
+    def link_is_mapped(self, node_fun):
         return True
     def get_feature_matrix(self):
         self.mf_matrix = np.zeros([len(self.node_list),
@@ -124,7 +143,7 @@ class Graph:
                         cnt +=1
 #                print(_sum, cnt)
                 if cnt != 0:
-                    tmp = _sum / cnt
+                    tmp = _sum / (cnt + 1)
                     self.node_list[n_1].dis = tmp
                     self.mf_matrix[n_1, 3] = tmp
         else:
@@ -148,6 +167,7 @@ class Graph:
     def floydWarshall(self): 
 #        INF  = 99999
         node_num = len(self.node_list)
+        self.hop = (np.ones((node_num, node_num)) * np.inf)
         self.dist = (np.ones((node_num, node_num)) * np.inf)
         for n_1 in range(node_num): 
             node_name = self.node_list[n_1].name
@@ -156,8 +176,10 @@ class Graph:
             for l in range(len(links)):
                 for n_2 in range(node_num):
                     if n_1 == n_2:
+                        self.hop[n_1][n_2] = 0
                         self.dist[n_1][n_2] = 0
                     elif links[l][self.input_cons.network_topology_link_name] == self.node_list[n_2].name:
+                        self.hop[n_1][n_2] = 1
                         self.dist[n_1][n_2] = links[l][self.input_cons.network_topology_link_dis]
 #        print(dist[0][0])  
 #        dist = graph
@@ -182,6 +204,10 @@ class Graph:
       
                     # If vertex k is on the shortest path from  
                     # i to j, then update the value of dist[i][j] 
+                    self.hop[i][j] = min(self.hop[i][j] , 
+                                      self.hop[i][k]+ self.hop[k][j] 
+                                    ) 
+        
                     self.dist[i][j] = min(self.dist[i][j] , 
                                       self.dist[i][k]+ self.dist[k][j] 
                                     ) 
@@ -216,6 +242,7 @@ class Chains:
             return([_Chain(self.data['chains'][i]['name'],
                                  self.data['chains'][i]['functions'], 
                                  self.data['chains'][i]['users'], 
+                                 self.data['chains'][i]['bandwidth'],
                                  self.data['chains'][i]['traffic%']) 
                                  for i in range(len(self.data['chains']))])
 

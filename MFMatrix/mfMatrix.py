@@ -8,12 +8,12 @@ Created on Wed Jan 30 11:32:07 2019
 import numpy as np
 import random
 import sys
-sys.path.insert(0, '../ReadFile')
-import InputConstants
+#sys.path.insert(1, '../Given')
+#import InputConstants
 class Mf:
     def __init__(self, graph):
         self.graph = graph
-        input_cons = InputConstants.Inputs()
+#        input_cons = InputConstants.Inputs()
         
 
 

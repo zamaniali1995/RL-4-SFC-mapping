@@ -39,8 +39,8 @@
 
     "chains": [
 		{
-			"name":"WebService",
-			"functions":["NAT","FW","TM","WOC","IDPS"],
+			"name": "WebService",
+			"functions": ["NAT","FW","TM","WOC","IDPS"],
 			"users": [
 				{"WA":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
 				{"CA1":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
@@ -57,7 +57,8 @@
 				{"NJ":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
-			"traffic%":18.2
+			"traffic%": 18.2,
+			"bandwidth": 50
 		},
 		{
 			 "name":"VoIP",
@@ -78,7 +79,8 @@
 				{"NJ":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
-			"traffic%":11.8
+			"traffic%":11.8, 
+			"bandwidth": 50
 		},
 		{
 		    "name":"VideoStreaming",
@@ -99,7 +101,8 @@
 				{"NJ":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
-			"traffic%":69.8
+			"traffic%":69.8,
+			"bandwidth": 50
 		},
 		{
 		    "name":"OnlineGaming",
@@ -120,7 +123,8 @@
 				{"NJ":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] },
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
-			"traffic%":0.2
+			"traffic%":0.2,
+			"bandwidth": 50
 		}
     ]
 	
