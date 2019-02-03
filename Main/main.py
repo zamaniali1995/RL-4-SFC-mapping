@@ -190,8 +190,11 @@ with tf.Session() as sess:
     
                                               
 
-#    for epoch in range(input_cons.epoch_num):
-    for epoch in range(20):
+    for epoch in range(input_cons.epoch_num):
+        placed_chains = []
+        graph.make_empty_nodes()
+        reward_list = []
+#    for epoch in range(20):
         #        gradi_list = np.zeros(input_cons.node_features)
 #        gradi_sum = np.zeros(input_cons.node_features)
 
@@ -201,6 +204,7 @@ with tf.Session() as sess:
         for ser_num, s  in enumerate(chains):
             node_fun = []
             ser_name = s.name
+            loss_list = []
 #            print(ser_name)
 #            fun = chains[s].fun[f]        
             grad_stack = np.zeros([1, input_cons.node_features], dtype=np.float)
@@ -214,10 +218,11 @@ with tf.Session() as sess:
                 y_one_hot, candidate = graph.select_one(y_RL,
                                                      approach='sample')
 #                print(y_one_hot)
-#                gradi = sess.run(gradients, feed_dict={y:y_RL , x: graph.mf_matrix})
+                loss_list.append(sess.run(cost, feed_dict={y:y_RL , x: graph.mf_matrix}))
                                                        
 #                print (gradi)
 #                InputList = {x: mf.mf_matrix}
+                
                 gradients_val = sess.run(accumulate_ops, feed_dict={x: graph.mf_matrix, y: y_one_hot})
 #                print(sess.run(grad_pairs, feed_dict={x: graph.mf_matrix, y: y_one_hot}))
 #                gradients_val1 = sess.run(gradients1, feed_dict={x: graph.mf_matrix, y: y_one_hot})                                                    
@@ -232,19 +237,23 @@ with tf.Session() as sess:
 #                print(graph.mf_matrix)
 #                print(gradients_val)
 #            print(node_fun)
-            print(gradients_val)
+#            print(gradients_val)
             if (graph.node_is_mapped(node_fun, chains) & 
                 graph.link_is_mapped(node_fun)):
                 reward = 0.001
                 # multipy gradients
-                print
-                print(sess.run(accumulate_mul))
+#                print
+#                print(sess.run(accumulate_mul))
                 graph.rev_to_cost(node_fun, ser_num, chains)
+                print(graph.rev_to_cost_val)
+                reward_list.append(graph.rev_to_cost_val)
+                placed_chains.append(node_fun)
 #                grads_stack += (input_cons.learning_rate * reward 
 #                               * grad_stack) 
             else:
+                placed_chains = []
                 sess.run(zero_ops, feed_dict={x: graph.mf_matrix, y: y_one_hot})
-#               
+                cnt = 0
 #                grads_stack = 0
             cnt += 1
             if cnt == input_cons.batch_Size:
@@ -252,11 +261,13 @@ with tf.Session() as sess:
                 accu = sess.run(accumulators)
                 gr = sess.run(train_step)
 #                print(sess.run(cost, feed_dict={x: graph.mf_matrix, y: y_one_hot}))
-                w_RL = sess.run(w)
-                print(w_RL)
-                print('***************')
-                print(sess.run(accumulators))
-                print("--------------------------------------")
+                w_val, b_val = sess.run([w, b])
+                print(w_val)
+                graph.batch_function_placement(ser_name, placed_chains)
+                placed_chains = []
+#                print('***************')
+#                print(sess.run(accumulators))
+#                print("--------------------------------------")
 #                cost_ = sess.run(cost, feed_dict={x: graph.mf_matrix, y: y_one_hot})                
 #                grad_stack = tf.convert_to_tensor(grads_stack)
 #                print(cost_)

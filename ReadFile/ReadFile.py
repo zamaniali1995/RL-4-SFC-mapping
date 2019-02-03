@@ -39,6 +39,7 @@ class _Chain:
 # Grahp class contains of nodes and links features
 class Graph:
     def __init__(self, path):
+        self.rev_to_cost_val = 0
         self.input_cons = InputConstants.Inputs()
         link_list = []
         node_len = []
@@ -78,30 +79,31 @@ class Graph:
         return(self.data['functions'][fun])
     def function_placement(self, node, ser, fun):
         self.node_list[node].fun[ser].append(fun)
-    def batch_function_placement(self, ser, node_fun):
+    def batch_function_placement(self, ser, node_fun_list):
 #        node = node_fun[0]
 #        fun = node_fun[1]
-        for node, fun in node_fun:
-            self.function_placement(node, ser, fun)
+        for node_fun in node_fun_list: 
+            for node, fun in node_fun:
+                self.function_placement(node, ser, fun)
     def node_is_mapped(self, node_fun, chains):
-        return True
-        #        _sum = 0
-#        flag = True
-#        service_list = [chains[i].name for i in range(len(chains))]
-#        for _node_fun in node_fun:
-#            _sum += self.function_cpu_usage(_node_fun[1])
+#        return True
+        _sum = 0
+        flag = True
+        service_list = [chains[i].name for i in range(len(chains))]
+        for node, _node_fun in node_fun:
+            _sum += self.function_cpu_usage(_node_fun)
 #            node = _node_fun[0]
-#            for s in service_list:
-#                _fun = self.node_list[node].fun[s]
-#                for _fun_ in _fun:
-#                   _sum += self.function_cpu_usage(_fun_)
-#        print(_sum)
-#        if _sum > self.node_list[node].cap:
-#                flag = False
-#        return flag
+            for s in service_list:
+                _fun = self.node_list[node].fun[s]
+                for _fun_ in _fun:
+                   _sum += self.function_cpu_usage(_fun_)
+        print(_sum)
+        if _sum > self.node_list[node].cap:
+                flag = False
+        return flag
     def rev_to_cost(self, node_fun, ser_num, chains):
         td = 2
-        self.rev_to_cost_val = 0
+        
         R = self.revenue_measure(node_fun, ser_num, chains,td)
         C = self.cost_measure(node_fun, ser_num, chains, td)
         self.rev_to_cost_val = (R / C)
@@ -222,6 +224,10 @@ class Graph:
             can = np.random.choice(y.shape[1], p=tmp)
             y_one_hot[0][can]=1
             return(y_one_hot, can)
+    def make_empty_nodes(self):
+        for i in range(len(self.node_list)):
+                for j in range(len(self.data['chains'])):
+                    self.node_list[i].fun[self.data['chains'][j]['name']] = []
         
 class Chains:
     def __init__(self, path, graph):
@@ -232,7 +238,7 @@ class Chains:
 #            service_list = [data['chains'][c]['name'] 
 #            for c in range(len(data['chains']))]
 #            print(service_list)
-            for i in range(len(self.data['chains'])):
+            for i in range(len(graph.node_list)):
                 for j in range(len(self.data['chains'])):
                     graph.node_list[i].fun[self.data['chains'][j]['name']] = []
     def read(self):
