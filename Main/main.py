@@ -16,9 +16,22 @@ from mfMatrix import Mf
 import numpy as np
 input_cons = InputConstants.Inputs()
 
-graph = Graph(input_cons.network_path + input_cons.network_name)
-_chain = Chains(input_cons.chains_path + input_cons.chains_name, graph)
-chains = _chain.read()
+#graph = Graph(input_cons.network_path + input_cons.network_name)
+_chain = Chains()
+_chain.creat_chains_functions(input_cons.chains_random_path + input_cons.chains_random_name,
+                     input_cons.chains_num,
+                     input_cons.fun_num,
+                     input_cons.chain_ban, 
+                     input_cons.cpu_range)
+functions = _chain.read_funcions(input_cons.chains_random_path + input_cons.chains_random_name)
+graph = Graph(input_cons.network_path + input_cons.network_name, 
+              functions)
+#_chain.creat_chains(input_cons.chains_random_path + input_cons.chains_random_name,
+#                     input_cons.chains_num,
+#                     input_cons.fun_num,
+#                     input_cons.chain_ban)
+chains = _chain.read_chains(input_cons.chains_random_path + input_cons.chains_random_name, 
+                     graph)
 graph.get_feature_matrix()
 #%%
 # Learning
@@ -30,7 +43,7 @@ x = tf.placeholder(dtype=tf.float64, shape=[node_num, input_cons.node_features],
 y = tf.placeholder(dtype=tf.float64, shape=[1, node_num], name="y")
 
 # Define variable w and fill it with random number
-w = tf.Variable(tf.random_normal(shape=[input_cons.node_features, 1], stddev=1e-10, mean=0, dtype=tf.float64), name="weights", dtype=tf.float64, trainable=True)
+w = tf.Variable(tf.random_normal(shape=[input_cons.node_features, 1], stddev=1e-15, mean=1e-15, dtype=tf.float64), name="weights", dtype=tf.float64, trainable=True)
 #w = tf.get_variable(dtype=tf.float64, name="weights",
 #                          initializer=tf.zeros(
 #                                  shape=[input_cons.node_features, 1],
@@ -114,8 +127,13 @@ zero_stacked_ops = [
 with tf.Session() as sess:
     train_cnt = 0
     reward_list = []
+    reward_list_final = []
+    cost_list_final = []
     cost_list = []
     rev_list = []
+    rev_list_final = []
+    loss_list = []
+    loss_list_final = []
     tf.local_variables_initializer().run()
     tf.global_variables_initializer().run()
     for epoch in range(input_cons.epoch_num):
@@ -127,7 +145,7 @@ with tf.Session() as sess:
         for ser_num, s  in enumerate(chains):
             node_fun = []
             ser_name = s.name
-            loss_list = []
+
 #            grad_stack = np.zeros([1, input_cons.node_features], dtype=np.float)
             for fun in s.fun:
                 y_RL = sess.run(y_predicted, feed_dict={x: graph.mf_matrix})
@@ -138,6 +156,7 @@ with tf.Session() as sess:
                 node_fun.append((candidate, fun)) 
                 graph.update_feature_matrix(node_fun)
                 mf_matrix = graph.mf_matrix
+
             cnt += 1
             if (graph.node_is_mapped(node_fun, chains) & 
                 graph.link_is_mapped(node_fun)):
@@ -159,12 +178,21 @@ with tf.Session() as sess:
                 sess.run(zero_ops) 
                 accu_zero = sess.run(accumulators)
             else:
+                loss_list = []
                 placed_chains = []
                 sess.run(zero_ops)
                 sess.run(zero_stacked_ops)
                 cnt = 0
 
             if cnt == input_cons.batch_Size:
+                reward_list_final.append(sum(reward_list) / cnt)
+                reward_list = []
+                loss_list_final.append(sum(loss_list) / cnt)
+                loss_list = []
+                cost_list_final.append(sum(cost_list) / cnt)
+                cost_list = []
+                rev_list_final.append(sum(rev_list) / cnt)
+                rev_list = []
                 train_cnt += 1
                 print("epoch = ", epoch)
                 print("Train cnt = ", train_cnt)
@@ -175,6 +203,9 @@ with tf.Session() as sess:
 #                print(accu_stack[1])
                 print("b_val = ", b_val)
                 print("w[0]_val = ", w_val[0])
+                print("w[1]_val = ", w_val[1])
+                print("w[2]_val = ", w_val[2])
+                print("w[3]_val = ", w_val[3])
                 print("**********************")
                 graph.batch_function_placement(ser_name, placed_chains)
                 placed_chains = []

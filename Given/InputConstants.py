@@ -11,6 +11,8 @@ class Inputs:
     network_name = "nsf_14_network.json"
     chains_path = "../Data/"
     chains_name = "nsf_14_network.json"
+    chains_random_name = "chain_random.json"
+    chains_random_path = "../Data/"
 #    START_OF_FILE_DELIMETER = '***START OF FILE***'
 #    END_OF_FILE_DELIMETER = '***END OF FILE***'
 #    START_OF_NODES_DELIMETER = "***START OF NODE***"
@@ -26,9 +28,12 @@ class Inputs:
     function_name = 0
     function_usage = 1
 # Learning parameters
-    epoch_num = 1000
-    batch_Size = 2
-    train_num=3500
-    valid_num=100
+    epoch_num = 10000
+    batch_Size = 5
     node_features = 4
-    learning_rate = 1e-8
+    learning_rate = 1e-10
+# Creat chains parameters
+    chains_num = 300
+    fun_num = 5
+    chain_ban = 10
+    cpu_range = 3

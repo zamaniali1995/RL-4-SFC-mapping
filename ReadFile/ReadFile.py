@@ -11,6 +11,7 @@ import sys
 sys.path.insert(0, '../Given')
 import InputConstants
 import json
+import random as rd
 # Node features class
 class _Node:
     def __init__(self, name, cap, deg, bandwidth, dis, function):
@@ -30,15 +31,16 @@ class _Link:
         self.name = name
 # Chain features class
 class _Chain:
-    def __init__(self, name, function, user, bandwidth, traffic):
+    def __init__(self, name, function, bandwidth):
         self.name = name
         self.fun = function
-        self.user = user
+#        self.user = user
         self.ban = bandwidth
-        self.traf = traffic
+#        self.traf = traffic
 # Grahp class contains of nodes and links features
 class Graph:
-    def __init__(self, path):
+    def __init__(self, path, funs):
+        self.funs = funs
         self.rev_to_cost_val = 0
         self.input_cons = InputConstants.Inputs()
         link_list = []
@@ -66,9 +68,9 @@ class Graph:
                 for cnt_link in range(len(link_list[cnt_node])):
                     ban_sum += link_list[cnt_node][cnt_link][self.input_cons.network_topology_link_cap]
                 node_ban.append(ban_sum)
-            
+#            self.data['networkTopology']['nodes'][cnt][self.input_cons.network_topology_node_cap]
             self.node_list = [_Node(node_name_list[cnt],
-                              self.data['networkTopology']['nodes'][cnt][self.input_cons.network_topology_node_cap],
+                              rd.randint(1, 1000),
                               len(link_list[cnt]),
                               node_ban[cnt],
                               0,
@@ -76,7 +78,7 @@ class Graph:
                               for cnt in range(len(node_name_list))]
             self.floydWarshall()
     def function_cpu_usage(self, fun):
-        return(self.data['functions'][fun])
+        return(self.funs[fun])
     def function_placement(self, node, ser, fun):
         self.node_list[node].fun[ser].append(fun)
     def batch_function_placement(self, ser, node_fun_list):
@@ -159,6 +161,7 @@ class Graph:
     
     def dis_cal(self, node_1, node_2):
         return self.dist[node_1][node_2]
+    
         # Python Program for Floyd Warshall Algorithm 
   
 # Number of vertices in the graph 
@@ -233,29 +236,53 @@ class Graph:
                     self.node_list[i].fun[self.data['chains'][j]['name']] = []
         
 class Chains:
-    def __init__(self, path, graph):
+    def __init__(self):
         self.input_cons = InputConstants.Inputs()
-        self.path = path
-        with open(self.path, "r") as data_file:
-            self.data = json.load(data_file)
+#        with open(self.path, "r") as data_file:
+#            self.data = json.load(data_file)
+##            service_list = [data['chains'][c]['name'] 
+##            for c in range(len(data['chains']))]
+##            print(service_list)
+#            for i in range(len(graph.node_list)):
+#                for j in range(len(self.data['chains'])):
+#                    graph.node_list[i].fun[self.data['chains'][j]['name']] = []
+    def read_chains(self, path, graph):
+        with open(path, "r") as data_file:
+            data = json.load(data_file)
 #            service_list = [data['chains'][c]['name'] 
 #            for c in range(len(data['chains']))]
 #            print(service_list)
             for i in range(len(graph.node_list)):
-                for j in range(len(self.data['chains'])):
-                    graph.node_list[i].fun[self.data['chains'][j]['name']] = []
-    def read(self):
+                for j in range(len(data["chains"])):
+                    graph.node_list[i].fun[data["chains"][j]['name']] = []
 #        with open(self.path, "r") as data_file:
 #            self.data = json.load(data_file)
 #            for i in range(len(data['chains'])):
-            return([_Chain(self.data['chains'][i]['name'],
-                                 self.data['chains'][i]['functions'], 
-                                 self.data['chains'][i]['users'], 
-                                 self.data['chains'][i]['bandwidth'],
-                                 self.data['chains'][i]['traffic%']) 
-                                 for i in range(len(self.data['chains']))])
+            return([_Chain(data["chains"][i]['name'],
+                                 data["chains"][i]['functions'], 
+                                 data["chains"][i]['bandwidth']) 
+                                 for i in range(len(data["chains"]))])
 
-    
+    def read_funcions(self, path):
+         with open(path, "r") as data_file:
+            data = json.load(data_file)
+         return(data["functions"])
+    def creat_chains_functions(self, path, chain_num, fun_num, ban, cpu):
+         chains = {}
+         chains["chains"] = []
+         chains["functions"] = {}
+         for f in range(fun_num):
+             chains["functions"][str(f)] = rd.randint(1, cpu)
+         for c in range(chain_num):
+             chain = {}
+             rand_fun_num = rd.randint(1, fun_num)         
+             chain['name'] = str(c)
+             chain['functions'] = [str(f) 
+                                for f in range(rand_fun_num)]
+             chain['bandwidth'] = rd.randint(1, ban)
+             chains["chains"].append(chain)
+         with open(path, 'w') as outfile:  
+             json.dump(chains, outfile)
 #            func_list = data['chains'][0]['function']
 #            print(len(data['chains']))
 #            self.link_len_list = [data['networkTopology']['links'][node_name][]]
