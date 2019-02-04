@@ -87,19 +87,22 @@ class Graph:
                 self.function_placement(node, ser, fun)
     def node_is_mapped(self, node_fun, chains):
 #        return True
-        _sum = 0
+#        _sum = 0
         flag = True
         service_list = [chains[i].name for i in range(len(chains))]
-        for node, _node_fun in node_fun:
-            _sum += self.function_cpu_usage(_node_fun)
-#            node = _node_fun[0]
-            for s in service_list:
-                _fun = self.node_list[node].fun[s]
-                for _fun_ in _fun:
-                   _sum += self.function_cpu_usage(_fun_)
-        print(_sum)
-        if _sum > self.node_list[node].cap:
-                flag = False
+        for node_1, _ in node_fun:
+            _sum = 0
+            for node_2, fun in node_fun:
+                if node_1 == node_2:
+                    _sum += self.function_cpu_usage(fun)
+        #            node = _node_fun[0]
+                    for s in service_list:
+                        _fun = self.node_list[node_1].fun[s]
+                        for _fun_ in _fun:
+                           _sum += self.function_cpu_usage(_fun_)
+#            print(_sum, node_1)
+            if _sum > self.node_list[node_1].cap:
+                        flag = False
         return flag
     def rev_to_cost(self, node_fun, ser_num, chains):
         td = 2
@@ -113,7 +116,7 @@ class Graph:
         bandwidth_usage = chains[ser_num].ban * (len(node_fun) - 1)
         return td * (cpu_usage + bandwidth_usage)
     def cost_measure(self, node_fun, ser_num, chains, td):
-        _sum = 0
+        _sum = 1
         for n in range(len(node_fun)-1):
             _sum += self.hop_count(node_fun[n][0], node_fun[n+1][0])
         return chains[ser_num].ban * _sum * td

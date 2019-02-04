@@ -2,20 +2,20 @@
 	"networkTopology":
 		{
 			"nodes": [
-                                  ["1", 5], 
-                                  ["2", 5],
-                                  ["3", 4],
-                                  ["4", 5],
-                                  ["5", 5],
-                                  ["6", 4],
-                                  ["7", 4], 
-                                  ["8", 4],
-                                  ["9", 4],
-                                  ["10", 1],
-                                  ["11", 1],
-                                  ["12", 1],
-                                  ["13", 1],
-                                  ["14", 1]
+                                  ["1", 10], 
+                                  ["2", 10],
+                                  ["3", 10],
+                                  ["4", 10],
+                                  ["5", 10],
+                                  ["6", 10],
+                                  ["7", 10], 
+                                  ["8", 10],
+                                  ["9", 10],
+                                  ["10", 10],
+                                  ["11", 10],
+                                  ["12", 10],
+                                  ["13", 10],
+                                  ["14", 10]
                                  ] ,
 			"links": {
 		                   "1":[["2", 2100, 100], ["3", 3000, 100], ["8", 4800, 100]],
@@ -35,7 +35,7 @@
                                  }
 	   },
 
-    "functions":{"NAT": 1, "FW": 1, "TM": 1, "WOC": 1, "IDPS": 1, "VOC": 1},
+    "functions":{"NAT": 1, "FW": 2, "TM": 3, "WOC": 1, "IDPS": 3, "VOC": 2},
 
     "chains": [
 		{
@@ -58,7 +58,7 @@
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
 			"traffic%": 18.2,
-			"bandwidth": 50
+			"bandwidth": 10
 		},
 		{
 			 "name":"VoIP1",
@@ -80,7 +80,7 @@
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
 			"traffic%":11.8, 
-			"bandwidth": 50
+			"bandwidth": 2
 		},
 		{
 		    "name":"VideoStreaming1",
@@ -102,7 +102,7 @@
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
 			"traffic%":69.8,
-			"bandwidth": 50
+			"bandwidth": 5
 		},
 		{
 		    "name":"OnlineGaming1",
@@ -124,7 +124,7 @@
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
 			"traffic%":0.2,
-			"bandwidth": 50
+			"bandwidth": 20
 		},
 		{
 		    "name":"OnlineGaming2",
@@ -168,7 +168,7 @@
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
 			"traffic%":0.2,
-			"bandwidth": 50
+			"bandwidth": 2
 		},
 		{
 		    "name":"OnlineGaming4",
@@ -190,7 +190,7 @@
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
 			"traffic%":0.2,
-			"bandwidth": 50
+			"bandwidth": 6
 		},
 		{
 		    "name":"OnlineGaming5",
@@ -212,7 +212,7 @@
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
 			"traffic%":0.2,
-			"bandwidth": 50
+			"bandwidth": 20
 		},
 		{
 		    "name":"OnlineGaming6",
@@ -234,7 +234,7 @@
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
 			"traffic%":0.2,
-			"bandwidth": 50
+			"bandwidth": 15
 		},
 		{
 		    "name":"OnlineGaming7",
@@ -256,7 +256,7 @@
 				{"NY":[ "WA","CA1","CA2","UT","CO","NE","IL","TX","GA","DC","PA","MI","NJ","NY"] }
 						],
 			"traffic%":0.2,
-			"bandwidth": 50
+			"bandwidth": 16
 		}
 		
 
