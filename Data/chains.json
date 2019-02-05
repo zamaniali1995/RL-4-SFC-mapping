@@ -1,0 +1,28 @@
+{ 
+    "functions":{"NAT": 1, "FW": 2, "TM": 3, "WOC": 1, "IDPS": 3, "VOC": 2},
+
+    "chains": [
+		{
+			"name": "WebService",
+			"functions": ["NAT","FW","TM","WOC","IDPS"],
+			"bandwidth": 10
+		},
+		{
+		        "name":"VoIP",
+			"functions":["NAT","FW","TM","FW","NAT"], 
+			"bandwidth": 2
+		},
+		{
+		        "name":"VideoStreaming",
+			"functions":["NAT","FW","TM","VOC","IDPS"],
+			"bandwidth": 5
+		},
+		{
+		        "name":"OnlineGaming",
+			"functions":["NAT","FW","VOC","WOC","IDPS"],
+			"bandwidth": 20
+		}		
+
+             ]
+	
+}
