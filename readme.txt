@@ -4,7 +4,7 @@ simulation research paper: "A novel reinforcement learning algorithm for virtual
 
 ## Getting Started
 
-###System requirements
+### System requirements
 * Ubuntu 16.04 or later (64-bit)
 * macOS 10.12.6 (Sierra) or later (64-bit) (no GPU support)
 * Windows 7 or later (64-bit) (Python 3 only)
