@@ -4,9 +4,7 @@ simulation research paper: "A novel reinforcement learning algorithm for virtual
 
 ## Getting Started
 
-### Prerequisites
-
-####System requirements
+###System requirements
 * Ubuntu 16.04 or later (64-bit)
 * macOS 10.12.6 (Sierra) or later (64-bit) (no GPU support)
 * Windows 7 or later (64-bit) (Python 3 only)
@@ -14,69 +12,60 @@ simulation research paper: "A novel reinforcement learning algorithm for virtual
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+*install tensorflow: check [this](https://www.tensorflow.org/install/pip)
 
-Say what the step will be
+### Input files
+*1. nsf_14_network.json :
+    In this file nsf_net network topology was defined.
+    you can change it with your network topology.
+    
+    How?
+    
+    One dictionary was defined in this file which contains "networkTopology"
+    and in the "networkTopology" list "Nodes" and "Links" were defined.
 
-```
-Give the example
-```
+    In the "Nodes" list, list of all topology nodes and their capacity were defined. 
+    The first element is the name of the node and the second element is capacity.
+    You can also change the order of them by two parameters 
+        network_topology_node_name = 0
+            network_topology_node_cap = 1
+    in the InputConstants.py
 
-And repeat
+    In the "Links" dictionary, all network topology links were defined.
+    For example:
+         "1":[["2", 2100, 100], ["3", 3000, 100], ["8", 4800, 100]]
+    determins node "1" conected to node "2" with link that has lenghth 2100 and 
+    capacity 100.
+    you can change order of node name, length and capacity with three parameters:
+        network_topology_link_name = 0
+            network_topology_link_dis = 1
+            network_topology_link_cap = 2
+    in the InputConstants.py
+ *2. chains.json
+    In this file chains were defined which contains two "functions" and "chains" 
+    dictionary. You can define your chains in this json file.
 
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
+    How?
+    
+    In the "functions" dictionary, functions that used in chains were placed. Each
+    the function defined in a list and first element of the list belongs to the function's name and 
+    the second element determines the number of CPU core that function needs. You can change the order of
+    name and CPU usage of functions by two parameters:
+        function_name = 0
+            function_usage = 1
+    in the InputConstants.py
+*3. chain_random.json
+    This json file creates automatically with
+     "generate_chains_functions(creat_chains_functions(path, chain_num, fun_num, ban, CPU)"
+    where the path is a path for storing generated file, chain_num is number of chains you want to 
+    generate, fun_num is the maximum number of chains' function, the ban is the maximum bandwidth of chains and 
+    CPU is the maximum number of cup cores that each function needs.
+  
+### Parameters
+* You can change parameters of simulation (learning rate, number of epoch, ...) in the      	*"InputConstants.py"* which placed in the *"Given"* folder
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+* **Ali Zamani** - [zamaniali1995](https://github.com/zamaniali1995)
 
 ## Acknowledgments
 
