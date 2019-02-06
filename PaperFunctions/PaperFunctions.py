@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Jan 27 19:24:24 2019
+Created on Sun Jan 27 16:44:41 2019
 
 @author: ali
+
+@email: zamaniali1995@gmail.com
 """
 ###############################################################
 # Import packages
@@ -78,7 +80,8 @@ class Graph:
                               None) 
                               for cnt in range(len(node_name_list))]
             self.dist, self.hop =  self.__floydWarshall()
-
+            self.td = round(rd.normalvariate(self.input_cons.td_mean,
+                                             self.input_cons.td_std))
     ###############################################################
     # "__function_cpu_usage": returns cpu usage of each nodes
     #               --->input: fun >>> functions name
@@ -170,7 +173,7 @@ class Graph:
     #               --->output: revenue value
     ###############################################################        
     def revenue_measure(self, node_fun, ser_num, chains):
-        td = self.input_cons.td
+        td = self.td
         cpu_usage = sum([self.__function_cpu_usage(node_fun[i][1])
                     for i in range(len(node_fun))])
         bandwidth_usage = chains[ser_num].ban * (len(node_fun) - 1)
@@ -185,7 +188,7 @@ class Graph:
     #               --->output: cost value
     ###############################################################        
     def cost_measure(self, node_fun, ser_num, chains):
-        td = self.input_cons.td
+        td = self.td
         _sum = 0.0001
         for n in range(len(node_fun)-1):
             _sum += self.__hop_count(node_fun[n][0], node_fun[n+1][0])

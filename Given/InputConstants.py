@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Jan 27 17:58:40 2019
+Created on Sun Jan 27 16:44:41 2019
 
 @author: ali
+
+@email: zamaniali1995@gmail.com
 """
+
 class Inputs:
 #  Path and name of input files   
     network_path = "../Data/"
@@ -23,15 +26,16 @@ class Inputs:
     function_name = 0
     function_usage = 1
 # Learning parameters
-    epoch_num = 200
-    batch_Size = 5
+    epoch_num = 1000
+    batch_Size = 2
     node_features = 4
     learning_rate = 1e-15
 # Creat chains parameters
-    chains_num = 300
-    fun_num = 5
-    chain_ban = 10
-    cpu_range = 3
-    max_node_cap = 50
+    chains_num = 100
+    fun_num = 10
+    chain_ban = 100
+    cpu_range = 10
+    max_node_cap = 100
     min_node_cap = 10
-    td = 2
+    td_mean = 100
+    td_std = 10
