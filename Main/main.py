@@ -88,7 +88,14 @@ accumulators_stacked = [
         trainable=False
     ) for tv in [w, b]
     ]
-      
+
+#accumulators_stacked_2 = [
+#    tf.Variable(
+#        tf.zeros_like(tv.initialized_value()),
+#        trainable=False
+#    ) for tv in [w, b]
+#    ]     
+
 accumulate_ops = [
     accumulator.assign_add(
         grad 
@@ -100,7 +107,12 @@ accumulate_stacked_ops = [
     ) for accumulator_s, accumulator in zip(accumulators_stacked,  accumulators)]
                                             
                            
-
+#accumulate_stacked_1_ops = [
+#    accumulator_s.assign_add(
+#        accumulator 
+#    ) for accumulator_s, accumulator in 
+#            zip(accumulators_stacked_1,  accumulators)]
+#    
 accumulate_mul = [
     accumulator.assign_add(
         (accumulator * reward) - accumulator  
@@ -127,6 +139,10 @@ zero_stacked_ops = [
     ) for (accumulator, tv) in zip(accumulators_stacked, [w, b])
                 ]
 with tf.Session() as sess:
+    reward_list_1 = []
+    cost_list_1 = []
+    rev_list_1 = []
+    loss_list_1 = []
     train_cnt = 0
     reward_list = []
     reward_list_final = []
@@ -146,10 +162,12 @@ with tf.Session() as sess:
         cnt = 0
         node_fun = []
         mf_matrix = graph.update_feature_matrix(node_fun)
+        ser_name_list = []
         for ser_num, s  in enumerate(chains):
             node_fun = []
-            ser_name = s.name
 
+            ser_name_list.append(s.name)
+            
 #            grad_stack = np.zeros([1, input_cons.node_features], dtype=np.float)
             for fun in s.fun:
                 y_RL = sess.run(y_predicted, feed_dict={x: mf_matrix})
@@ -161,66 +179,98 @@ with tf.Session() as sess:
                 mf_matrix = graph.update_feature_matrix(node_fun)
 #                mf_matrix = graph.mf_matrix
             node_fun_list.append(node_fun)
-            cnt += 1
-            if (graph.node_is_mapped(node_fun_list, chains) & 
-                graph.link_is_mapped(node_fun_list, chains)):
-#                reward = 0.001
-                reward_val = graph.rev_to_cost(node_fun, ser_num, chains)
-#                reward_val = graph.rev_to_cost_val
-#                reward_tensor = tf.convert_to_tensor(reward_val)
-                accu = sess.run(accumulators)
-                sess.run(accumulate_mul, feed_dict={reward: reward_val})
-                accu_mul = sess.run(accumulators)
-                sess.run(accumulate_stacked_ops)
-                accu_stack = sess.run(accumulators_stacked)                          
-                reward_list.append(reward_val)
-                cost_list.append(graph.cost_measure(node_fun,
-                                                    ser_num, chains))
-                rev_list.append(graph.revenue_measure(node_fun, ser_num,
+            reward_val = graph.rev_to_cost(node_fun, ser_num, chains)
+            sess.run(accumulate_mul, feed_dict={reward: reward_val})
+            sess.run(accumulate_stacked_ops)
+            sess.run(zero_ops)
+            cost_list.append(graph.cost_measure(node_fun,
+                                             ser_num, chains))
+            rev_list.append(graph.revenue_measure(node_fun, ser_num,
                                                       chains))
-                placed_chains.append(node_fun)
-                sess.run(zero_ops) 
-                accu_zero = sess.run(accumulators)
-                node_fun = []
-            else:
-                loss_list = []
-                placed_chains = []
-                sess.run(zero_ops)
-                sess.run(zero_stacked_ops)
-                cnt = 0
-                node_fun = []
-                node_fun_list = []
-
+            reward_list.append(reward_val)
+            cnt += 1
+            node_fun = []
             if cnt == input_cons.batch_Size:
-                reward_list_final.append(sum(reward_list) / cnt)
-                reward_list = []
-                loss_list_final.append(sum(loss_list) / cnt)
-                loss_list = []
-                cost_list_final.append(sum(cost_list) / cnt)
-                cost_list = []
-                rev_list_final.append(sum(rev_list) / cnt)
-                rev_list = []
-                train_cnt += 1
-                print("epoch = ", epoch)
-                print("Train cnt = ", train_cnt)
-                #apply gradients
-#                accu = sess.run(accumulators)
-                sess.run(train_step)
-                w_val, b_val = sess.run([w, b])
-#                print(accu_stack[1])
-                print("b_val = ", b_val)
-                print("w[0]_val = ", w_val[0])
-                print("w[1]_val = ", w_val[1])
-                print("w[2]_val = ", w_val[2])
-                print("w[3]_val = ", w_val[3])
-                print("**********************")
-                graph.batch_function_placement(ser_name, placed_chains)
-                placed_chains = []
-                cnt = 0
-                sess.run(zero_ops)
-                accu_zero = sess.run(accumulators)
-                sess.run(zero_stacked_ops)
-                accu_stack_zero = sess.run(accumulators_stacked)                          
-                node_fun = []
-                node_fun_list = []
+                if (graph.node_is_mapped(node_fun_list, chains) & 
+                    graph.link_is_mapped(node_fun_list, chains)):
+                    reward_list_1.append(sum(reward_list) / cnt)
+                    reward_list = []
+                    loss_list_1.append(sum(loss_list) / cnt)
+                    loss_list = []
+                    cost_list_1.append(sum(cost_list) / cnt)
+                    cost_list = []
+                    rev_list_1.append(sum(rev_list) / cnt)
+                    rev_list = []
+                    train_cnt += 1
+                    print("epoch = ", epoch)
+                    print("Train cnt = ", train_cnt)
+                    #apply gradients
+    #                accu = sess.run(accumulators)
+                    sess.run(train_step)
+                    w_val, b_val = sess.run([w, b])
+    #                print(accu_stack[1])
+                    print("b_val = ", b_val)
+                    print("w[0]_val = ", w_val[0])
+                    print("w[1]_val = ", w_val[1])
+                    print("w[2]_val = ", w_val[2])
+                    print("w[3]_val = ", w_val[3])
+                    print("**********************")
+                    graph.batch_function_placement(ser_name_list, node_fun_list)
+                    ser_name_list = []
+                    cnt = 0
+                    sess.run(zero_ops)
+#                    accu_zero = sess.run(accumulators)
+                    sess.run(zero_stacked_ops)
+#                    accu_stack_zero = sess.run(accumulators_stacked)                          
+                    node_fun = []
+                    node_fun_list = []
+                else:
+                    loss_list = []
+                    reward_list = []
+                    rev_list = []
+                    cost_list = []
+    #                placed_chains = []
+                    sess.run(zero_ops)
+                    sess.run(zero_stacked_ops)
+                    cnt = 0
+                    node_fun = []
+                    node_fun_list = []
+        reward_list_final.append(sum(reward_list_1) / len(reward_list_1))
+        reward_list_1 = []
+        cost_list_final.append(sum(cost_list_1) / len(cost_list_1))
+        cost_list_1 = []
+        rev_list_final.append(sum(rev_list_1) / len(rev_list_1))
+        rev_list_1 = []
+#            if cnt == input_cons.batch_Size:
+#                reward_list_final.append(sum(reward_list) / cnt)
+#                reward_list = []
+#                loss_list_final.append(sum(loss_list) / cnt)
+#                loss_list = []
+#                cost_list_final.append(sum(cost_list) / cnt)
+#                cost_list = []
+#                rev_list_final.append(sum(rev_list) / cnt)
+#                rev_list = []
+#                train_cnt += 1
+#                print("epoch = ", epoch)
+#                print("Train cnt = ", train_cnt)
+#                #apply gradients
+##                accu = sess.run(accumulators)
+#                sess.run(train_step)
+#                w_val, b_val = sess.run([w, b])
+##                print(accu_stack[1])
+#                print("b_val = ", b_val)
+#                print("w[0]_val = ", w_val[0])
+#                print("w[1]_val = ", w_val[1])
+#                print("w[2]_val = ", w_val[2])
+#                print("w[3]_val = ", w_val[3])
+#                print("**********************")
+#                graph.batch_function_placement(ser_name, node_fun_list)
+##                placed_chains = []
+#                cnt = 0
+#                sess.run(zero_ops)
+#                accu_zero = sess.run(accumulators)
+#                sess.run(zero_stacked_ops)
+#                accu_stack_zero = sess.run(accumulators_stacked)                          
+#                node_fun = []
+#                node_fun_list = []
                 
