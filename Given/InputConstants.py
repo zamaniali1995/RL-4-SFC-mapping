@@ -6,20 +6,15 @@ Created on Sun Jan 27 17:58:40 2019
 @author: ali
 """
 class Inputs:
-    
+#  Path and name of input files   
     network_path = "../Data/"
     network_name = "nsf_14_network.json"
     chains_path = "../Data/"
     chains_name = "nsf_14_network.json"
     chains_random_name = "chain_random.json"
     chains_random_path = "../Data/"
-#    START_OF_FILE_DELIMETER = '***START OF FILE***'
-#    END_OF_FILE_DELIMETER = '***END OF FILE***'
-#    START_OF_NODES_DELIMETER = "***START OF NODE***"
-#    END_OF_NODES_DELIMETER = "***END OF NODE***"
-#    START_OF_LINK_DELIMETER = "***START OF LINK***"
-#    END_OF_LINK_DELIMETER = "***END OF LINK***"
-# network topology parameters
+
+# Network topology parameters
     network_topology_node_name = 0
     network_topology_node_cap = 1
     network_topology_link_name = 0
@@ -37,3 +32,6 @@ class Inputs:
     fun_num = 5
     chain_ban = 10
     cpu_range = 3
+    max_node_cap = 1000
+    min_node_cap = 500
+    td = 2

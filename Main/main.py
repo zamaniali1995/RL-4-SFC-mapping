@@ -5,34 +5,36 @@ Created on Sun Jan 27 16:44:41 2019
 @author: ali
 """
 import sys
-sys.path.insert(0, '../ReadFile')
-sys.path.insert(0, '../MFMatrix')
-sys.path.insert(0, '../Given')
-import InputConstants
-from InputConstants import Inputs
-from ReadFile import Graph, Chains
-import tensorflow as tf
-from mfMatrix import Mf
-import numpy as np
-input_cons = InputConstants.Inputs()
+sys.path.insert(0, '../PaperFunctions')
+#sys.path.insert(0, '../MFMatrix')
+sys.path.insert(1, '../a')
 
-#graph = Graph(input_cons.network_path + input_cons.network_name)
-_chain = Chains()
-_chain.creat_chains_functions(input_cons.chains_random_path + input_cons.chains_random_name,
-                     input_cons.chains_num,
-                     input_cons.fun_num,
-                     input_cons.chain_ban, 
-                     input_cons.cpu_range)
-functions = _chain.read_funcions(input_cons.chains_random_path + input_cons.chains_random_name)
-graph = Graph(input_cons.network_path + input_cons.network_name, 
-              functions)
-#_chain.creat_chains(input_cons.chains_random_path + input_cons.chains_random_name,
+
+import InputConstants
+#from InputConstants import Inputs
+#from PaperFunctions import Graph, Chains
+#import tensorflow as tf
+##from mfMatrix import Mf
+#import numpy as np
+##input_cons = InputConstants.Inputs()
+#
+##graph = Graph(input_cons.network_path + input_cons.network_name)
+#_chain = Chains()
+#_chain.creat_chains_functions(input_cons.chains_random_path + input_cons.chains_random_name,
 #                     input_cons.chains_num,
 #                     input_cons.fun_num,
-#                     input_cons.chain_ban)
-chains = _chain.read_chains(input_cons.chains_random_path + input_cons.chains_random_name, 
-                     graph)
-graph.get_feature_matrix()
+#                     input_cons.chain_ban, 
+#                     input_cons.cpu_ra         nge)
+#functions = _chain.read_funcions(input_cons.chains_random_path + input_cons.chains_random_name)
+#graph = Graph(input_cons.network_path + input_cons.network_name, 
+#              functions)
+##_chain.creat_chains(input_cons.chains_random_path + input_cons.chains_random_name,
+##                     input_cons.chains_num,
+##                     input_cons.fun_num,
+##                     input_cons.chain_ban)
+#chains = _chain.read_chains(input_cons.chains_random_path + input_cons.chains_random_name, 
+#                     graph)
+#graph.get_feature_matrix()
 #%%
 # Learning
 tf.reset_default_graph()
@@ -161,8 +163,8 @@ with tf.Session() as sess:
             if (graph.node_is_mapped(node_fun, chains) & 
                 graph.link_is_mapped(node_fun)):
 #                reward = 0.001
-                graph.rev_to_cost(node_fun, ser_num, chains)
-                reward_val = graph.rev_to_cost_val
+                reward_val = graph.rev_to_cost(node_fun, ser_num, chains)
+#                reward_val = graph.rev_to_cost_val
 #                reward_tensor = tf.convert_to_tensor(reward_val)
                 accu = sess.run(accumulators)
                 sess.run(accumulate_mul, feed_dict={reward: reward_val})
