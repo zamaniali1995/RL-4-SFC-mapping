@@ -33,7 +33,6 @@ graph = Graph(input_cons.network_path + input_cons.network_name,
 chains = _chain.read_chains(input_cons.chains_random_path + input_cons.chains_random_name, 
                      graph)
 
-
 ###############################################################
 # Learning
 ###############################################################
@@ -44,13 +43,15 @@ x = tf.placeholder(dtype=tf.float64, shape=[node_num, input_cons.node_features],
 # Define placeholder y for output
 y = tf.placeholder(dtype=tf.float64, shape=[1, node_num], name="y")
 # Define variable w and fill it with random number
-w = tf.Variable(tf.random_normal(shape=[input_cons.node_features, 1], stddev=1e-15, mean=1e-15, dtype=tf.float64), name="weights", dtype=tf.float64, trainable=True)
+w_1 = tf.Variable(tf.random_normal(shape=[input_cons.node_features, 5], stddev=1e-5, mean=1e-1, dtype=tf.float64), name="weights_1", dtype=tf.float64, trainable=True)
+w_2 = tf.Variable(tf.random_normal(shape=[5, 1], stddev=1e-5, mean=1e-1, dtype=tf.float64), name="weights_2", dtype=tf.float64, trainable=True)
 # Define variable b and fill it with zero 
 b = tf.Variable(tf.zeros(1, dtype=tf.float64), name="bias", dtype=tf.float64, trainable=True)
 # Define variable reward and fill it with zero 
 reward = tf.Variable(0, name="reward", dtype=tf.float64)
 # Define logistic Regression
-logit = tf.matmul(x, w) + b
+z_1 = tf.matmul(x, w_1)
+logit = tf.matmul(z_1, w_2) + b
 logit_mod = tf.reshape(logit, [1, -1])
 y_predicted = tf.nn.softmax(logit_mod)
 # Define maximum likelihood loss function
@@ -60,21 +61,21 @@ cost = tf.reduce_mean(loss)
 # Define optimizer: GradientDescent         
 optimizer = tf.train.GradientDescentOptimizer(learning_rate= input_cons.learning_rate)
 # Compute gradients; grad_pairs contains (gradient, variable) pairs
-grad_pairs = optimizer.compute_gradients(loss, [w, b])
+grad_pairs = optimizer.compute_gradients(loss, [w_1, w_2, b])
 opt = optimizer.minimize(cost)
 # Create variables to store accumulated gradients
 accumulators = [
     tf.Variable(
         tf.zeros_like(tv.initialized_value()),
         trainable=False
-    ) for tv in [w, b]
+    ) for tv in [w_1, w_2, b]
     ]
 
 accumulators_stacked = [
     tf.Variable(
         tf.zeros_like(tv.initialized_value()),
         trainable=False
-    ) for tv in [w, b]
+    ) for tv in [w_1, w_2, b]
     ]
 
 accumulate_ops = [
@@ -100,14 +101,16 @@ train_step = optimizer.apply_gradients(
 zero_ops = [
     accumulator.assign(
         tf.zeros_like(tv)
-    ) for (accumulator, tv) in zip(accumulators, [w, b])]
+    ) for (accumulator, tv) in zip(accumulators, [w_1, w_2, b])]
 
 zero_stacked_ops = [
     accumulator.assign(
         tf.zeros_like(tv)
-    ) for (accumulator, tv) in zip(accumulators_stacked, [w, b])
-                ]
+    ) for (accumulator, tv) in zip(accumulators_stacked, [w_1, w_2, b])
+               ]
+#%%
 with tf.Session() as sess:
+    graph.make_empty_nodes(chains)
     reward_list_1 = []
     cost_list_1 = []
     rev_list_1 = []
@@ -170,12 +173,12 @@ with tf.Session() as sess:
                     print("epoch = ", epoch)
                     print("Train cnt = ", train_cnt)
                     sess.run(train_step)
-                    w_val, b_val = sess.run([w, b])
+                    w_1_val, w_2_val, b_val = sess.run([w_1, w_2, b])
                     print("b_val = ", b_val)
-                    print("w[0]_val = ", w_val[0])
-                    print("w[1]_val = ", w_val[1])
-                    print("w[2]_val = ", w_val[2])
-                    print("w[3]_val = ", w_val[3])
+                    print("w[0]_val = ", w_1_val[0])
+                    print("w[1]_val = ", w_1_val[1])
+                    print("w[2]_val = ", w_1_val[2])
+                    print("w[3]_val = ", w_1_val[3])
                     print("**********************")
                     graph.batch_function_placement(ser_name_list, node_fun_list)
                     ser_name_list = []

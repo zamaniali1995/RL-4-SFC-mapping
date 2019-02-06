@@ -29,12 +29,12 @@ class Inputs:
     epoch_num = 1000
     batch_Size = 4
     node_features = 4
-    learning_rate = 1e-10
+    learning_rate = 1e-5
 # Creat chains parameters
-    chains_num = 1000
+    chains_num = 100
     fun_num = 5
     chain_ban = 100
-    cpu_range = 10
+    cpu_range = 5
     max_node_cap = 100
     min_node_cap = 50
     td_mean = 100
