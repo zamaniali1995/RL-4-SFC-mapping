@@ -7,33 +7,33 @@ Created on Sun Jan 27 16:44:41 2019
 import sys
 sys.path.insert(0, '../PaperFunctions')
 #sys.path.insert(0, '../MFMatrix')
-sys.path.insert(1, '../a')
+sys.path.insert(1, '../Given')
 
 
 import InputConstants
 #from InputConstants import Inputs
-#from PaperFunctions import Graph, Chains
-#import tensorflow as tf
-##from mfMatrix import Mf
-#import numpy as np
-##input_cons = InputConstants.Inputs()
-#
-##graph = Graph(input_cons.network_path + input_cons.network_name)
-#_chain = Chains()
-#_chain.creat_chains_functions(input_cons.chains_random_path + input_cons.chains_random_name,
+from PaperFunctions import Graph, Chains
+import tensorflow as tf
+#from mfMatrix import Mf
+import numpy as np
+input_cons = InputConstants.Inputs()
+
+#graph = Graph(input_cons.network_path + input_cons.network_name)
+_chain = Chains()
+_chain.creat_chains_functions(input_cons.chains_random_path + input_cons.chains_random_name,
+                     input_cons.chains_num,
+                     input_cons.fun_num,
+                     input_cons.chain_ban, 
+                     input_cons.cpu_range)
+functions = _chain.read_funcions(input_cons.chains_random_path + input_cons.chains_random_name)
+graph = Graph(input_cons.network_path + input_cons.network_name, 
+              functions)
+#_chain.creat_chains(input_cons.chains_random_path + input_cons.chains_random_name,
 #                     input_cons.chains_num,
 #                     input_cons.fun_num,
-#                     input_cons.chain_ban, 
-#                     input_cons.cpu_ra         nge)
-#functions = _chain.read_funcions(input_cons.chains_random_path + input_cons.chains_random_name)
-#graph = Graph(input_cons.network_path + input_cons.network_name, 
-#              functions)
-##_chain.creat_chains(input_cons.chains_random_path + input_cons.chains_random_name,
-##                     input_cons.chains_num,
-##                     input_cons.fun_num,
-##                     input_cons.chain_ban)
-#chains = _chain.read_chains(input_cons.chains_random_path + input_cons.chains_random_name, 
-#                     graph)
+#                     input_cons.chain_ban)
+chains = _chain.read_chains(input_cons.chains_random_path + input_cons.chains_random_name, 
+                     graph)
 #graph.get_feature_matrix()
 #%%
 # Learning
@@ -140,28 +140,30 @@ with tf.Session() as sess:
     tf.global_variables_initializer().run()
     for epoch in range(input_cons.epoch_num):
         placed_chains = []
-        graph.make_empty_nodes()
-
+        graph.make_empty_nodes(chains)
+        node_fun_list = []
         grads_stack = 0
         cnt = 0
+        node_fun = []
+        mf_matrix = graph.update_feature_matrix(node_fun)
         for ser_num, s  in enumerate(chains):
             node_fun = []
             ser_name = s.name
 
 #            grad_stack = np.zeros([1, input_cons.node_features], dtype=np.float)
             for fun in s.fun:
-                y_RL = sess.run(y_predicted, feed_dict={x: graph.mf_matrix})
+                y_RL = sess.run(y_predicted, feed_dict={x: mf_matrix})
                 y_one_hot, candidate = graph.select_one(y_RL,
                                                      approach='sample')
-                loss_list.append(sess.run(cost, feed_dict={y:y_RL , x: graph.mf_matrix}))
-                gradient_val = sess.run(accumulate_ops, feed_dict={x: graph.mf_matrix, y: y_one_hot})
+                loss_list.append(sess.run(cost, feed_dict={y:y_RL , x: mf_matrix}))
+                gradient_val = sess.run(accumulate_ops, feed_dict={x: mf_matrix, y: y_one_hot})
                 node_fun.append((candidate, fun)) 
-                graph.update_feature_matrix(node_fun)
-                mf_matrix = graph.mf_matrix
-
+                mf_matrix = graph.update_feature_matrix(node_fun)
+#                mf_matrix = graph.mf_matrix
+            node_fun_list.append(node_fun)
             cnt += 1
-            if (graph.node_is_mapped(node_fun, chains) & 
-                graph.link_is_mapped(node_fun)):
+            if (graph.node_is_mapped(node_fun_list, chains) & 
+                graph.link_is_mapped(node_fun_list, chains)):
 #                reward = 0.001
                 reward_val = graph.rev_to_cost(node_fun, ser_num, chains)
 #                reward_val = graph.rev_to_cost_val
@@ -171,20 +173,23 @@ with tf.Session() as sess:
                 accu_mul = sess.run(accumulators)
                 sess.run(accumulate_stacked_ops)
                 accu_stack = sess.run(accumulators_stacked)                          
-                reward_list.append(graph.rev_to_cost_val)
+                reward_list.append(reward_val)
                 cost_list.append(graph.cost_measure(node_fun,
-                                                    ser_num, chains, 2))
+                                                    ser_num, chains))
                 rev_list.append(graph.revenue_measure(node_fun, ser_num,
-                                                      chains, 2))
+                                                      chains))
                 placed_chains.append(node_fun)
                 sess.run(zero_ops) 
                 accu_zero = sess.run(accumulators)
+                node_fun = []
             else:
                 loss_list = []
                 placed_chains = []
                 sess.run(zero_ops)
                 sess.run(zero_stacked_ops)
                 cnt = 0
+                node_fun = []
+                node_fun_list = []
 
             if cnt == input_cons.batch_Size:
                 reward_list_final.append(sum(reward_list) / cnt)
@@ -216,5 +221,6 @@ with tf.Session() as sess:
                 accu_zero = sess.run(accumulators)
                 sess.run(zero_stacked_ops)
                 accu_stack_zero = sess.run(accumulators_stacked)                          
-                
+                node_fun = []
+                node_fun_list = []
                 

@@ -23,15 +23,15 @@ class Inputs:
     function_name = 0
     function_usage = 1
 # Learning parameters
-    epoch_num = 10000
+    epoch_num = 200
     batch_Size = 5
     node_features = 4
-    learning_rate = 1e-10
+    learning_rate = 1e-15
 # Creat chains parameters
     chains_num = 300
     fun_num = 5
     chain_ban = 10
     cpu_range = 3
-    max_node_cap = 1000
-    min_node_cap = 500
+    max_node_cap = 50
+    min_node_cap = 10
     td = 2

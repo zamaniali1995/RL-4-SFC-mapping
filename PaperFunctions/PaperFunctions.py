@@ -141,9 +141,11 @@ class Graph:
                         _sum += self.__function_cpu_usage(fun)
                 cpu_req[node_1] = _sum
             cpu_used = [sum(x) for x in zip(cpu_used, cpu_req)]
-        print(cpu_used)
-        if _sum > self.node_list[node_1].cap:
-            flag = False
+        node_cap = [self.node_list[node].cap
+                    for node in range(len(self.node_list))]
+        for cpu, cap in zip(cpu_used, node_cap):
+            if cpu > cap:
+                flag = False
         return flag
     
     ###############################################################
@@ -155,9 +157,8 @@ class Graph:
     #               --->output: revenue to cost ratio value
     ###############################################################        
     def rev_to_cost(self, node_fun, ser_num, chains):
-        td = self.input_cons.td
-        R = self.revenue_measure(node_fun, ser_num, chains,td)
-        C = self.cost_measure(node_fun, ser_num, chains, td)
+        R = self.revenue_measure(node_fun, ser_num, chains)
+        C = self.cost_measure(node_fun, ser_num, chains)
         return (R / C)
     
     ###############################################################
@@ -323,10 +324,10 @@ class Graph:
     #               --->input:  none   
     #               --->output: none
     ###############################################################        
-    def make_empty_nodes(self):
-        for i in range(len(self.node_list)):
-                for j in range(len(self.data['chains'])):
-                    self.node_list[i].fun[self.data['chains'][j]['name']] = []
+    def make_empty_nodes(self, chains):
+        for node in range(len(self.node_list)):
+                for ser in range(len(chains)):
+                    self.node_list[node].fun[chains[ser].name] = []
 ###############################################################
 # Ghains class:|
 #             |__>functions:-->
