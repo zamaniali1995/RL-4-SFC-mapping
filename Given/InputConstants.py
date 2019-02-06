@@ -31,11 +31,11 @@ class Inputs:
     node_features = 4
     learning_rate = 1e-10
 # Creat chains parameters
-    chains_num = 100
+    chains_num = 1000
     fun_num = 5
     chain_ban = 100
     cpu_range = 10
     max_node_cap = 100
-    min_node_cap = 10
+    min_node_cap = 50
     td_mean = 100
     td_std = 10
