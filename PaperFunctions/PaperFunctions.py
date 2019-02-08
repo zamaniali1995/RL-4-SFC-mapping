@@ -390,7 +390,7 @@ class Chains:
              chain['name'] = str(c)
              chain['functions'] = [str(f) 
                                 for f in range(rand_fun_num)]
-             chain['bandwidth'] = rd.randint(1, ban)
+             chain['bandwidth'] = rd.randint(80, ban)
              chains["chains"].append(chain)
          with open(path, 'w') as outfile:  
              json.dump(chains, outfile)

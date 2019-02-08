@@ -26,16 +26,16 @@ class Inputs:
     function_name = 0
     function_usage = 1
 # Learning parameters
-    epoch_num = 1000
+    epoch_num = 100
     batch_Size = 4
     node_features = 4
-    learning_rate = 1e-5
+    learning_rate = 1e-7
 # Creat chains parameters
     chains_num = 100
-    fun_num = 5
-    chain_ban = 100
-    cpu_range = 5
-    max_node_cap = 100
-    min_node_cap = 50
+    fun_num = 3
+    chain_ban = 90
+    cpu_range = 3
+    max_node_cap = 60
+    min_node_cap = 30
     td_mean = 100
     td_std = 10

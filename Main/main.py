@@ -43,39 +43,42 @@ x = tf.placeholder(dtype=tf.float64, shape=[node_num, input_cons.node_features],
 # Define placeholder y for output
 y = tf.placeholder(dtype=tf.float64, shape=[1, node_num], name="y")
 # Define variable w and fill it with random number
-w_1 = tf.Variable(tf.random_normal(shape=[input_cons.node_features, 5], stddev=1e-5, mean=1e-1, dtype=tf.float64), name="weights_1", dtype=tf.float64, trainable=True)
-w_2 = tf.Variable(tf.random_normal(shape=[5, 1], stddev=1e-5, mean=1e-1, dtype=tf.float64), name="weights_2", dtype=tf.float64, trainable=True)
+w_1 = tf.Variable(tf.random_normal(shape=[input_cons.node_features, 1], stddev=1e-3, mean=1e-2, dtype=tf.float64), name="weights_1", dtype=tf.float64, trainable=True)
+#w_2 = tf.Variable(tf.random_normal(shape=[5, 1], stddev=1e-3, mean=1e-2, dtype=tf.float64), name="weights_2", dtype=tf.float64, trainable=True)
 # Define variable b and fill it with zero 
-b = tf.Variable(tf.zeros(1, dtype=tf.float64), name="bias", dtype=tf.float64, trainable=True)
+b_1 = tf.Variable(tf.zeros(1, dtype=tf.float64), name="bias_1", dtype=tf.float64, trainable=True)
+b_2 = tf.Variable(tf.zeros(1, dtype=tf.float64), name="bias_2", dtype=tf.float64, trainable=True)
 # Define variable reward and fill it with zero 
 reward = tf.Variable(0, name="reward", dtype=tf.float64)
 # Define logistic Regression
-z_1 = tf.matmul(x, w_1)
-logit = tf.matmul(z_1, w_2) + b
+#z_1 = tf.nn.relu(tf.matmul(x, w_1) + b_1)
+#z_1 = tf.matmul(x, w_1)
+logit = tf.matmul(x, w_1) + b_1
 logit_mod = tf.reshape(logit, [1, -1])
 y_predicted = tf.nn.softmax(logit_mod)
 # Define maximum likelihood loss function
-loss = -1 * tf.reduce_sum(tf.multiply(y, tf.log(y_predicted)))
+loss = -1 * tf.reduce_sum(tf.multiply(y, tf.log(y_predicted + 
+                                                tf.constant(1e-10, dtype=tf.float64))))
 #loss = tf.nn.sigmoid_cross_entropy_with_logits(logits=logit_mod, labels=y)
 cost = tf.reduce_mean(loss)
 # Define optimizer: GradientDescent         
 optimizer = tf.train.GradientDescentOptimizer(learning_rate= input_cons.learning_rate)
 # Compute gradients; grad_pairs contains (gradient, variable) pairs
-grad_pairs = optimizer.compute_gradients(loss, [w_1, w_2, b])
+grad_pairs = optimizer.compute_gradients(loss, [w_1, b_1])
 opt = optimizer.minimize(cost)
 # Create variables to store accumulated gradients
 accumulators = [
     tf.Variable(
         tf.zeros_like(tv.initialized_value()),
         trainable=False
-    ) for tv in [w_1, w_2, b]
+    ) for tv in [w_1, b_1]
     ]
 
 accumulators_stacked = [
     tf.Variable(
         tf.zeros_like(tv.initialized_value()),
         trainable=False
-    ) for tv in [w_1, w_2, b]
+    ) for tv in [w_1, b_1]
     ]
 
 accumulate_ops = [
@@ -101,12 +104,12 @@ train_step = optimizer.apply_gradients(
 zero_ops = [
     accumulator.assign(
         tf.zeros_like(tv)
-    ) for (accumulator, tv) in zip(accumulators, [w_1, w_2, b])]
+    ) for (accumulator, tv) in zip(accumulators, [w_1, b_1])]
 
 zero_stacked_ops = [
     accumulator.assign(
         tf.zeros_like(tv)
-    ) for (accumulator, tv) in zip(accumulators_stacked, [w_1, w_2, b])
+    ) for (accumulator, tv) in zip(accumulators_stacked, [w_1, b_1])
                ]
 #%%
 with tf.Session() as sess:
@@ -173,7 +176,7 @@ with tf.Session() as sess:
                     print("epoch = ", epoch)
                     print("Train cnt = ", train_cnt)
                     sess.run(train_step)
-                    w_1_val, w_2_val, b_val = sess.run([w_1, w_2, b])
+                    w_1_val, b_val = sess.run([w_1, b_1])
                     print("b_val = ", b_val)
                     print("w[0]_val = ", w_1_val[0])
                     print("w[1]_val = ", w_1_val[1])
@@ -197,13 +200,17 @@ with tf.Session() as sess:
                     cnt = 0
                     node_fun = []
                     node_fun_list = []
-        reward_list_final.append(sum(reward_list_1) / len(reward_list_1))
+        if len(reward_list_1) != 0:    
+            reward_list_final.append(sum(reward_list_1) / len(reward_list_1))
         reward_list_1 = []
-        cost_list_final.append(sum(cost_list_1) / len(cost_list_1))
+        if len(cost_list_1) != 0:
+            cost_list_final.append(sum(cost_list_1) / len(cost_list_1))
         cost_list_1 = []
-        rev_list_final.append(sum(rev_list_1) / len(rev_list_1))
+        if len(rev_list_1) != 0:
+            rev_list_final.append(sum(rev_list_1) / len(rev_list_1))
         rev_list_1 = []
-        loss_list_final.append(sum(loss_list_1) / len(loss_list_1))
+        if len(loss_list_1) != 0:
+            loss_list_final.append(sum(loss_list_1) / len(loss_list_1))
         loss_list_1 = []
 ###############################################################
 # Plots
