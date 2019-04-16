@@ -1,6 +1,6 @@
 # Project Title
 
-simulation research paper: **"A novel reinforcement learning algorithm for virtual network embedding"**
+simulation of research paper: **"A novel reinforcement learning algorithm for virtual network embedding"**
 
 ## Getting Started
 
