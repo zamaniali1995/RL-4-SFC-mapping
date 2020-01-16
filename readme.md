@@ -1,6 +1,6 @@
 # Project Title
 
-simulation of research paper: **"A novel reinforcement learning algorithm for virtual network embedding"**
+**"A Reinforcement Learning Algorithm for Service Function Chain (SFC) Mapping"**
 
 ## Getting Started
 
